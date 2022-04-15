@@ -7,7 +7,7 @@ from quadOdeFunctionHF import quadOdeFunctionHF
 
 class SimulateQuadrotorDynamicsHF:
     
-    def __init__(self, S):
+    def __init__(self, S, Q, R):
     # simulateQuadrotorDynamicsHF : Simulates the dynamics of a quadrotor
     #                               aircraft (high-fidelity version).
     #
@@ -53,6 +53,9 @@ class SimulateQuadrotorDynamicsHF:
     #     constants = Structure containing constants used in simulation and
     #                 control, as defined in constantsScript.m 
     #
+    # Q -------------- Matrix that weights the state costs
+    #
+    # R -------------- Matrix that weights the state costs
     #
     #+------------------------------------------------------------------------------+
     # References:
@@ -89,7 +92,10 @@ class SimulateQuadrotorDynamicsHF:
         # Run ODE solver for segment
         self.solver = ode(quadOdeFunctionHF).set_integrator( 'dopri5' )
         
-        
+        self.Q = Q
+        self.R = R 
+        self.cost = 0
+
         # output structure
         self.P = {}
         self.P['tVec'] = tVecIn[0]
@@ -111,18 +117,29 @@ class SimulateQuadrotorDynamicsHF:
             rI     = self.Xk[0:3]
             vI     = self.Xk[3:6]
             RBI    = self.Xk[6:15].reshape(3,3)
+            eK      = dcm2euler(RBI)
             omegaB = self.Xk[15:18]
-            
+
+            stateVtr = np.concatenate( (rI, vI, eK, omegaB) )
+            self.cost += (stateVtr @ self.Q @ stateVtr) + (action @ self.R @ action)
+
+
+             # End the episode if the roll or pitch is greater than a certain threshold
+            if np.abs(eK[1]) > np.deg2rad(60) or np.abs(eK[2]) > np.deg2rad(60):
+                done = True
+    
             # Add the data from the kth segment to your storage vector
             self.P['tVec']              = np.append(  self.P['tVec'], self.t )
             self.P['state']['rMat']     = np.vstack( (self.P['state']['rMat'], rI) )
             self.P['state']['vMat']     = np.vstack( (self.P['state']['vMat'], vI) )                        
-            self.P['state']['eMat']     = np.vstack( (self.P['state']['eMat'], dcm2euler(RBI)) )
+            self.P['state']['eMat']     = np.vstack( (self.P['state']['eMat'], eK ) )
             self.P['state']['omegaBMat']= np.vstack( (self.P['state']['omegaBMat'], omegaB) )
         else:
             done = True
 
-        return self.Xk, self.t, done
+       
+
+        return self.Xk, self.cost, done
 
     def getResult(self):
         return self.P

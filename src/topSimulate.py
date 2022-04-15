@@ -44,13 +44,15 @@ S['P']['quadParams'] = quadParams
 S['P']['constants']  = constants
 
 
-quad_dynamics = SimulateQuadrotorDynamicsHF(S)
+Q = np.eye(12)
+R = np.eye(4)
+quad_dynamics = SimulateQuadrotorDynamicsHF(S, Q, R)
 
 actions = (590/200)*np.ones(4)  # Voltages to each motor 
 disturbances = np.zeros(3)      # Disturbance forces acting on the body, in Newtons, expressed in I
 
 while True:
-    Xk, t, done = quad_dynamics.step(actions, disturbances)
+    s, r, done = quad_dynamics.step(actions, disturbances)
     if done:
         break
 
