@@ -1,38 +1,25 @@
 # Top-level script for calling simulateQuadrotorDynamics
 from constantsScript import constants
 from quadParamsScript import quadParams
-from simulateQuadrotorDynamics import simulateQuadrotorDynamics
-from simulateQuadrotorDynamicsHF import simulateQuadrotorDynamicsHF
+from simulateQuadrotorDynamicsHF import SimulateQuadrotorDynamicsHF
 from visualizeQuad import visualizeQuad
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matlab.engine
 
 
 # Total simulation time, in seconds
 Tsim = 5
 
-# Update interval, in seconds.  This value should be small relative to the
-# shortest time constant of your system.
+# Update interval, in seconds. (This value should be small relative to the
+# shortest time constant of your system)
 delt = 0.005
 
-# Time vector, in seconds 
+# Number of time steps to finish the simulation 
 N = int( np.floor(Tsim/delt) )
 
 S = {}
 S['tVec'] = np.arange(0,N).reshape(N,1)*delt
-
-# Matrix of disturbance forces acting on the body, in Newtons, expressed in I
-S['distMat'] = np.zeros((N,3))
-
-
-omega = 2400
-# Rotor speeds at each time, in rad/s
-S['eaMat'] = (omega/200)*np.ones((N,4))
-
-# Rotor speeds at each time, in rad/s
-S['omegaMat'] = omega*np.ones((N,4))
 
 S['state0'] = {} 
 
@@ -56,13 +43,33 @@ S['P'] = {}
 S['P']['quadParams'] = quadParams
 S['P']['constants']  = constants
 
-P_simple = simulateQuadrotorDynamics(S)
-P_hf     = simulateQuadrotorDynamicsHF(S)
+
+quad_dynamics = SimulateQuadrotorDynamicsHF(S)
+
+actions = (590/200)*np.ones(4)  # Voltages to each motor 
+disturbances = np.zeros(3)      # Disturbance forces acting on the body, in Newtons, expressed in I
+
+while True:
+    Xk, t, done = quad_dynamics.step(actions, disturbances)
+    if done:
+        break
+
+Q = quad_dynamics.getResult()
+
+S2 = {}
+S2['tVec'] = Q['tVec']
+S2['rMat'] = Q['state']['rMat']
+S2['eMat'] = Q['state']['eMat']
+S2['plotFrequency'] = 20
+S2['makeGifFlag'] = False
+S2['gifFileName'] = 'testGif.gif'
+S2['bounds'] = 1*np.array( [-5, 5, -5, 5, -1, 1] )
+
+visualizeQuad( S2 )
 
 plt.figure(figsize=(16,7))
 plt.subplot(1,2,1)
-plt.plot( P_simple['tVec'], P_simple['state']['rMat'][:,2], label='rudimentary')
-plt.plot( P_hf['tVec'], P_hf['state']['rMat'][:,2], label='high fidelity')
+plt.plot( Q['tVec'], Q['state']['rMat'][:,2], label='high fidelity')
 plt.grid( True )
 plt.xlabel('Time (sec)')
 plt.ylabel('Z (m)')
@@ -70,13 +77,11 @@ plt.title('Vertical position of CM')
 plt.legend()
 
 plt.subplot(1,2,2)
-plt.plot( P_simple['tVec'], P_simple['state']['vMat'][:,2], label='rudimentary')
-plt.plot( P_hf['tVec'], P_hf['state']['vMat'][:,2], label='high fidelity')
+plt.plot( Q['tVec'], Q['state']['vMat'][:,2], label='high fidelity')
 plt.grid( True )
 plt.xlabel('Time (sec)')
 plt.ylabel('Z (m/s)')
 plt.legend()
 plt.title('Vertical velocity of CM')
 
-plt.savefig('../doc/figs/comparation_3.png')
 plt.show()
