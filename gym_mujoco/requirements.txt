@@ -4,3 +4,4 @@ scipy
 matplotlib
 baselines
 PyYAML
+tensorflow==1.14
