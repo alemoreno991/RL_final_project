@@ -1,3 +1,0 @@
-gym==0.12.1 
-imageio
-torch==1.2.0 
