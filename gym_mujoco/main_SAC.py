@@ -3,6 +3,9 @@
 #
 # export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 #
+#
+#   Reference: https://doi.org/10.48550/arXiv.1801.01290
+#
 ################################################################################
 import gym_multirotor.envs.mujoco.quadrotor_plus_hover as quad
 import numpy as np
@@ -23,7 +26,7 @@ agent = SAC(
     tau=0.995
 )
 
-nepisode = 10000
+nepisode = 1500
 batch_size = 128
 iteration = 0
 x = []
@@ -57,4 +60,5 @@ for i_episode in range(nepisode):
     x.append(i_episode)
     line1 = live_plotter(x,y,line1)
 
+live_plotter(x, y, line1, filename="img/SAC.png")
 env.close()

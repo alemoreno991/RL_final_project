@@ -3,6 +3,9 @@
 #
 # export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 #
+#
+#   Reference: https://doi.org/10.48550/arXiv.1707.06347
+#
 ################################################################################
 import gym_multirotor.envs.mujoco.quadrotor_plus_hover as quad
 from PPO import PPO
@@ -52,6 +55,7 @@ for i_episode in range(nepisode):
     x.append(i_episode)
     line1 = live_plotter(x,y,line1)
 
+live_plotter(x, y, line1, filename="img/PPO.png")
 env.close()
 
 

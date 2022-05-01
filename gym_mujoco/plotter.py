@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001):
+def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001, filename=""):
     if line1==[]:
         # this is the call to matplotlib that allows dynamic plotting
         plt.ion()
@@ -14,6 +14,10 @@ def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001):
         plt.title('Title: {}'.format(identifier))
         plt.show()
     
+    if not filename=="":
+        print("saving plot....")
+        plt.savefig(filename)
+
     # after the figure, axis, and line are created, we only need to update the y-data
     line1.set_ydata(y1_data)
     line1.set_xdata(x_vec)

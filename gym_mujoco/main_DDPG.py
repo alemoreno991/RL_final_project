@@ -3,6 +3,9 @@
 #
 # export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 #
+#
+#   Reference: https://doi.org/10.48550/arXiv.1509.02971
+#
 ################################################################################
 import gym_multirotor.envs.mujoco.quadrotor_plus_hover as quad
 from DDPG import DDPG
@@ -22,7 +25,7 @@ agent = DDPG(
     action_noise_std=0.3
 )
 
-nepisode = 10000
+nepisode = 1800
 iteration = 0
 x = []
 y = []
@@ -56,4 +59,5 @@ for i_episode in range(nepisode):
     x.append(i_episode)
     line1 = live_plotter(x,y,line1)
 
+live_plotter(x, y, line1, filename="img/DDPG.png")
 env.close()
