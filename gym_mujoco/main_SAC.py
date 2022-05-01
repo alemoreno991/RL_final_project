@@ -5,10 +5,11 @@
 #
 ################################################################################
 import gym_multirotor.envs.mujoco.quadrotor_plus_hover as quad
-from SAC import SAC
-
 import numpy as np
-import time 
+
+from SAC import SAC
+from plotter import live_plotter
+
 
 
 env = quad.QuadrotorPlusHoverEnv()
@@ -16,23 +17,25 @@ env = quad.QuadrotorPlusHoverEnv()
 agent = SAC(
     act_dim=4, 
     obs_dim=18,
-    lr_actor=1e-3, 
-    lr_value=1e-3, 
+    lr_actor=0.0001, 
+    lr_value=0.001, 
     gamma=0.99, 
     tau=0.995
 )
 
-nepisode = 1000
+nepisode = 10000
 batch_size = 128
 iteration = 0
-
+x = []
+y = []
+line1 = []
 for i_episode in range(nepisode):
     done = False
     obs0 = env.reset()
     ep_rwd = 0
 
     while not done:
-        env.render()
+        #env.render()
         
         act = agent.step(obs0)
 
@@ -49,5 +52,9 @@ for i_episode in range(nepisode):
         iteration += 1
 
     print('Ep: %i' % i_episode, "|Ep_r: %i" % ep_rwd)
+    
+    y.append(ep_rwd)
+    x.append(i_episode)
+    line1 = live_plotter(x,y,line1)
 
 env.close()
