@@ -29,8 +29,8 @@ class ActorNetwork(object):
 
     def step(self, obs, reuse):
         with tf.variable_scope(self.name, reuse=reuse):
-            h0 = tf.layers.dense(obs, 128, activation=tf.nn.relu, trainable=self.trainable)
-            h1 = tf.layers.dense(h0, 32, activation=tf.nn.relu, trainable=self.trainable)
+            h1 = tf.layers.dense(obs, 200, activation=tf.nn.relu, trainable=self.trainable)
+            #h1 = tf.layers.dense(h0, 64, activation=tf.nn.relu, trainable=self.trainable)
             mu = 2 * tf.layers.dense(h1, self.act_dim, activation=tf.nn.tanh, trainable=self.trainable)
             sigma = tf.layers.dense(h1, self.act_dim, activation=tf.nn.softplus, trainable=self.trainable)
             pi = tf.distributions.Normal(loc=mu, scale=sigma)
@@ -48,8 +48,8 @@ class ValueNetwork(object):
 
     def step(self, obs, reuse):
         with tf.variable_scope(self.name, reuse=reuse):
-            h0 = tf.layers.dense(inputs=obs, units=128, activation=tf.nn.relu)
-            h1 = tf.layers.dense(inputs=h0, units=32, activation=tf.nn.relu)
+            h1 = tf.layers.dense(inputs=obs, units=100, activation=tf.nn.relu)
+            #h1 = tf.layers.dense(inputs=h0, units=64, activation=tf.nn.relu)
             value = tf.layers.dense(inputs=h1, units=1, activation=None)
             return value
 

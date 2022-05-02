@@ -11,20 +11,33 @@ import gym_multirotor.envs.mujoco.quadrotor_plus_hover as quad
 from PPO import PPO
 
 import numpy as np
+from datetime import datetime
 from plotter import live_plotter
+
 
 env = quad.QuadrotorPlusHoverEnv()
 
+params = {}
+params["act_dim"] = 4
+params["obs_dim"] = 18
+params["lr_actor"]  = 1e-4
+params["lr_critic"] = 1e-3
+params["gamma"] = 0.99
+params["clip_range"] = 0.2
+params["num_episodes"] = 6000
+params["batch_size"] = 128
+
 agent = PPO(
-    act_dim=4, 
-    obs_dim=18,
-    lr_actor=0.00001, 
-    lr_value=0.00025, 
-    gamma=0.99, 
-    clip_range=0.2
+    act_dim=params["act_dim"],
+    obs_dim=params["obs_dim"],
+    lr_actor=params["lr_actor"],
+    lr_value=params["lr_critic"],
+    gamma=params["gamma"],
+    clip_range=params["clip_range"]
 )
 
-nepisode = 10000
+nepisode = params["num_episodes"]
+batch_size = params["batch_size"]
 x = []
 y = []
 line1 = []
@@ -44,7 +57,7 @@ for i_episode in range(nepisode):
         obs0 = obs1
         ep_rwd += rwd
 
-        if (t + 1) % 32 == 0 or True == done:
+        if (t + 1) % batch_size == 0 or True == done:
             _, last_value = agent.step(obs1)
             agent.learn(last_value, done)
         t = t + 1
@@ -53,9 +66,11 @@ for i_episode in range(nepisode):
 
     y.append(ep_rwd)
     x.append(i_episode)
-    line1 = live_plotter(x,y,line1)
+    line1 = live_plotter(x,y,line1, identifier="PPO", params=params)
 
-live_plotter(x, y, line1, filename="img/PPO.png")
+now = datetime.now() # current date and time
+date = now.strftime("%m-%d-%Y:%H:%M:%S")
+live_plotter(x, y, line1, filename="img/PPO_"+date+".png")
 env.close()
 
 

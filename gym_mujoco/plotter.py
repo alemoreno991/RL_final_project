@@ -1,17 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001, filename=""):
+def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001, filename="", params={}):
     if line1==[]:
         # this is the call to matplotlib that allows dynamic plotting
         plt.ion()
         fig = plt.figure(figsize=(13,6))
         ax = fig.add_subplot(111)
         # create a variable for the line so we can later update it
-        line1, = ax.plot(x_vec,y1_data,'-o',alpha=0.8)        
+        line1, = ax.plot(x_vec,y1_data,'o',alpha=0.8)        
         #update plot label/title
         plt.ylabel('Y Label')
-        plt.title('Title: {}'.format(identifier))
+        plt.title('Title: {}\n{}'.format(identifier,title_text(identifier,params)) )
+        plt.tight_layout()
         plt.show()
     
     if not filename=="":
@@ -32,3 +33,35 @@ def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001, filename=""
     
     # return line so we can update it again in the next iteration
     return line1
+
+def title_text(identifier, params):
+    text=""
+    if identifier=="DDPG":
+        text =  "act_num = "            + str(params["act_dim"]) + \
+                "\nobs_num = "          + str(params["obs_dim"]) + \
+                "\nlr_actor = "         + str(params["lr_actor"]) + \
+                "\nlr_critic = "        + str(params["lr_critic"]) + \
+                "\ngamma = "            + str(params["gamma"]) + \
+                "\ntau = "              + str(params["tau"]) + \
+                "\naction_noise_std = " + str(params["action_noise_std"]) + \
+                "\nnum_episodes = "     + str(params["num_episodes"]) + \
+                "\nbatch_size = "       + str(params["batch_size"]) 
+    if identifier=="SAC":
+        text =  "act_num = "        + str(params["act_dim"]) + \
+                "\nobs_num = "      + str(params["obs_dim"]) + \
+                "\nlr_actor = "     + str(params["lr_actor"]) + \
+                "\nlr_critic = "    + str(params["lr_critic"]) + \
+                "\ngamma = "        + str(params["gamma"]) + \
+                "\ntau = "          + str(params["tau"]) + \
+                "\nnum_episodes = " + str(params["num_episodes"]) + \
+                "\nbatch_size = "   + str(params["batch_size"])
+    if identifier=="PPO":
+        text =  "act_num = "        + str(params["act_dim"]) + \
+                "\nobs_num = "      + str(params["obs_dim"]) + \
+                "\nlr_actor = "     + str(params["lr_actor"]) + \
+                "\nlr_critic = "    + str(params["lr_critic"]) + \
+                "\ngamma = "        + str(params["gamma"]) + \
+                "\nclip_range = "   + str(params["clip_range"]) + \
+                "\nnum_episodes = " + str(params["num_episodes"]) + \
+                "\nbatch_size = "   + str(params["batch_size"])    
+    return text
