@@ -213,7 +213,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
 
         return qpos_init, qvel_init
 
-    def reset_model(self, params = None):
+    def reset_model(self, params=None):
         """
         Reset the environment robot model.
 
