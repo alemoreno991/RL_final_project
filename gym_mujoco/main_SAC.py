@@ -78,12 +78,8 @@ def train(params):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-<<<<<<< HEAD
-    parser.add_argument('--run', type=int, default=0)
-=======
     parser.add_argument('--run', type=int)
     parser.add_argument('--time', type=str)
->>>>>>> d83aa32ee013cc4a5f560c51cd742214e8247b0a
     args = parser.parse_args()
     i = args.run
     time = args.time
@@ -115,12 +111,8 @@ if __name__ == "__main__":
     data["test0"] = {}
     data["test0"]["actions"], data["test0"]["states"] = test(agent, options)
 
-<<<<<<< HEAD
-    pos_0 = [-1.,-1.,10.]
-=======
     print(colored('Running Test 2...', 'green'))
     pos_0 = [0.,1.,1.]
->>>>>>> d83aa32ee013cc4a5f560c51cd742214e8247b0a
     quat = [1., 0., 0., 0.]
     vel = [0.,0.,-1.]
     ang_vel = [0.3,0.,0.]
