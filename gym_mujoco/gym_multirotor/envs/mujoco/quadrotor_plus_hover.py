@@ -224,6 +224,8 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
         if params == None:
             qpos_init, qvel_init = self.initialize_robot(randomize=self.randomize_reset)
         else:
+            print("*******************************************************************************************************")
+            print("HELLO**************************************************************************************************")
             qpos_init = params[0:7]
             qvel_init = params[7:]
         self.set_state(qpos_init, qvel_init)

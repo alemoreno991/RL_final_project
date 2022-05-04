@@ -13,24 +13,24 @@ import numpy as np
 import argparse
 from SAC import SAC
 from datetime import datetime
+from termcolor import colored
 
 def test(agent, options):
     env = quad.QuadrotorPlusHoverEnv()
     done = False
     obs0 = env.reset(options=options)
-    action_state = {}
-    action_state[0] = {'action':None, 'state': obs0}
-    ct = 0
+    action = [] 
+    state = [obs0]
     while not done:
         # env.render()
-        ct+=1
         
         act = agent.step(obs0)
+        action.append(act)
 
         obs1, _, done, _ = env.step(act)
-        action_state[ct] = {'action':act, 'state': obs1}
+        state.append(obs1)
     
-    return action_state
+    return action, state
 
 def train(params): 
     env = quad.QuadrotorPlusHoverEnv(randomize_reset=True)
@@ -47,9 +47,8 @@ def train(params):
     nepisode = params["num_episodes"]
     batch_size = params["batch_size"]
     iteration = 0
-    x = []
     y = []
-    for i_episode in range(nepisode):
+    for _ in range(nepisode):
         done = False
         obs0 = env.reset()
         ep_rwd = 0
@@ -71,15 +70,8 @@ def train(params):
 
             iteration += 1
 
-        # print('Ep: %i' % i_episode, "|Ep_r: %i" % ep_rwd)
-        
         y.append(ep_rwd)
-        # x.append(i_episode)
-        # line1 = live_plotter(x,y,line1, identifier="SAC", params=params)
 
-    # now = datetime.now() # current date and time
-    # date = now.strftime("%m-%d-%Y:%H:%M:%S")
-    # live_plotter(x, y, line1, filename="img/SAC_"+date+".png")
     env.close()
     
     return agent, y
@@ -87,11 +79,12 @@ def train(params):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', type=int)
+    parser.add_argument('--time', type=str)
     args = parser.parse_args()
-
     i = args.run
+    time = args.time
+    
     data = {}
-    time = datetime.now().strftime("%m-%d-%Y:%H:%M:%S")
     params = {}
     params["act_dim"] = 4
     params["obs_dim"] = 18
@@ -99,13 +92,15 @@ if __name__ == "__main__":
     params["lr_critic"] = 1e-3 
     params["gamma"] = 0.99
     params["tau"] = 0.995
-    params["num_episodes"] = 2
+    params["num_episodes"] = 20
     params["batch_size"] = 128 
 
+    print(colored('Training...', 'green'))
     agent, returns = train(params)
 
     data["returns"] = returns
 
+    print(colored('Running Test 1...', 'green'))
     options = {}
     pos_0 = [1.,1.,0.]
     quat = [1., 0., 0., 0.]
@@ -113,15 +108,40 @@ if __name__ == "__main__":
     ang_vel = [0.,0.,0.]
     
     options["custom"] = pos_0 + quat + vel + ang_vel
-    data["test0"] = test(agent, options)
+    data["test0"] = {}
+    data["test0"]["actions"], data["test0"]["states"] = test(agent, options)
 
-    pos_0 = [1.,1.,1.]
+    print(colored('Running Test 2...', 'green'))
+    pos_0 = [0.,1.,1.]
     quat = [1., 0., 0., 0.]
+    vel = [0.,0.,-1.]
+    ang_vel = [0.3,0.,0.]
+    
+    options["custom"] = pos_0 + quat + vel + ang_vel
+    data["test1"] = {}
+    data["test1"]["actions"], data["test1"]["states"] = test(agent, options)
+
+    print(colored('Running Test 3...', 'green'))
+    options = {}
+    pos_0 = [1.,0.,0.5]
+    quat = [1., -0.08, 0.05, 0.]
     vel = [0.,0.,0.]
     ang_vel = [0.,0.,0.]
     
     options["custom"] = pos_0 + quat + vel + ang_vel
-    data["test1"] = test(agent, options)
+    data["test2"] = {}
+    data["test2"]["actions"], data["test2"]["states"] = test(agent, options)
 
+    print(colored('Running Test 4...', 'green'))
+    pos_0 = [-2.,-2.,0.]
+    quat = [1., -0.48, 0.35, 0.15]
+    vel = [-5.,2.,-3.]
+    ang_vel = [-0.1,0.2,0.7]
+    
+    options["custom"] = pos_0 + quat + vel + ang_vel
+    data["test3"] = {}
+    data["test3"]["actions"], data["test3"]["states"] = test(agent, options)
+
+    print(colored('Saving information...', 'green'))
     with open('data/SAC_run{}_{}.pkl'.format(i, time), 'wb') as f:
         pickle.dump(data, f)
