@@ -213,7 +213,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
 
         return qpos_init, qvel_init
 
-    def reset_model(self):
+    def reset_model(self, params = None):
         """
         Reset the environment robot model.
 
@@ -221,7 +221,11 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
             numpy.ndarray: Observation vector to be used at the begining of each episode.
         """
         self._time = 0
-        qpos_init, qvel_init = self.initialize_robot(randomize=self.randomize_reset)
+        if params == None:
+            qpos_init, qvel_init = self.initialize_robot(randomize=self.randomize_reset)
+        else:
+            qpos_init = params[0:7]
+            qvel_init = params[7:]
         self.set_state(qpos_init, qvel_init)
         observation = self._get_obs()
         return observation
