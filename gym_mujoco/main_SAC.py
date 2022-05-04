@@ -22,7 +22,7 @@ def test(agent, options):
     action_state[0] = {'action':None, 'state': obs0}
     ct = 0
     while not done:
-        # env.render()
+        env.render()
         ct+=1
         
         act = agent.step(obs0)
@@ -86,7 +86,7 @@ def train(params):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--run', type=int)
+    parser.add_argument('--run', type=int, default=0)
     args = parser.parse_args()
 
     i = args.run
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     data["returns"] = returns
 
     options = {}
-    pos_0 = [1.,1.,0.]
+    pos_0 = [1.,1.,10.]
     quat = [1., 0., 0., 0.]
     vel = [0.,0.,0.]
     ang_vel = [0.,0.,0.]
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     options["custom"] = pos_0 + quat + vel + ang_vel
     data["test0"] = test(agent, options)
 
-    pos_0 = [1.,1.,1.]
+    pos_0 = [-1.,-1.,10.]
     quat = [1., 0., 0., 0.]
     vel = [0.,0.,0.]
     ang_vel = [0.,0.,0.]

@@ -222,10 +222,12 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
         """
         self._time = 0
         if params == None:
+            print("no params")
             qpos_init, qvel_init = self.initialize_robot(randomize=self.randomize_reset)
         else:
-            qpos_init = params[0:7]
-            qvel_init = params[7:]
+            print(params["custom"])
+            qpos_init = np.array(params["custom"][0:7])
+            qvel_init = np.array(params["custom"][7:])
         self.set_state(qpos_init, qvel_init)
         observation = self._get_obs()
         return observation
