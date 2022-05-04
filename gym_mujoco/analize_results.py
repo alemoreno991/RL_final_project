@@ -1,12 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt 
 import pickle as pkl
+from dcm2euler import dcm2euler
+
 plt.rcParams["figure.figsize"] = (16,10)
 
-NUMBER_RUNS = 10
+NUMBER_RUNS = 4
 NUMBER_TESTS = 4
 
-file_suffix = "_2022-05-04_04:35:36.pkl"
+file_suffix = "_2022-05-04_05:02:28.pkl"
 ###############################################################################
 #   Load information
 ###############################################################################
@@ -90,20 +92,20 @@ for test in range(NUMBER_TESTS):
 ###############################################################################
 #   Create the statistical plot for cummulative reward
 ###############################################################################
-mu = returns.mean(axis=0)
-sigma = returns.std(axis=0)
-t = np.arange(len(mu))
-
-fig, ax = plt.subplots(1)
-ax.plot(t, mu, lw=2, label='mean cummulative reward', color='blue')
-ax.fill_between(t, mu+sigma, mu-sigma, facecolor='blue', alpha=0.5)
-ax.set_title("Statistical analysis of cummulative reward per episode")
-ax.legend(loc='upper left')
-ax.set_xlabel('episodes')
-ax.set_ylabel('Cummulative reward')
-ax.grid()
-
-plt.show()
+#mu = returns.mean(axis=0)
+#sigma = returns.std(axis=0)
+#t = np.arange(len(mu))
+#
+#fig, ax = plt.subplots(1)
+#ax.plot(t, mu, lw=2, label='mean cummulative reward', color='blue')
+#ax.fill_between(t, mu+sigma, mu-sigma, facecolor='blue', alpha=0.5)
+#ax.set_title("Statistical analysis of cummulative reward per episode")
+#ax.legend(loc='upper left')
+#ax.set_xlabel('episodes')
+#ax.set_ylabel('Cummulative reward')
+#ax.grid()
+#
+#plt.show()
 
 
 ###############################################################################
@@ -166,6 +168,17 @@ y_label = [
 ]
 for test in range(NUMBER_TESTS):
     data = tests["test{}".format(test)]["states"]
+    
+    pos = data[:,:3,:]
+    RBI = data[:,3:12,:]
+    vel = data[:,12:15,:]
+    omegaB = data[:,15:,:]
+    
+    data = np.hstack((pos,vel,vel,omegaB))
+    for i in range(RBI.shape[0]):
+        for k in range(NUMBER_RUNS):
+            data[i,6:9,k] = dcm2euler(RBI[i,:,k].reshape(3,3))
+
     fig, ax = runPlotter(
         data, 
         height=4,

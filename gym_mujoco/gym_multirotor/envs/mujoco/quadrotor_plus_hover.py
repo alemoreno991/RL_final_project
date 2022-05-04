@@ -213,7 +213,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
 
         return qpos_init, qvel_init
 
-    def reset_model(self, params = None):
+    def reset_model(self, params=None):
         """
         Reset the environment robot model.
 
@@ -224,6 +224,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
         if params == None:
             qpos_init, qvel_init = self.initialize_robot(randomize=self.randomize_reset)
         else:
+            # FIXME: In my computer this is not executing!!!!
             print("*******************************************************************************************************")
             print("HELLO**************************************************************************************************")
             qpos_init = params[0:7]

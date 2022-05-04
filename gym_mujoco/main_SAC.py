@@ -92,7 +92,7 @@ if __name__ == "__main__":
     params["lr_critic"] = 1e-3 
     params["gamma"] = 0.99
     params["tau"] = 0.995
-    params["num_episodes"] = 20
+    params["num_episodes"] = 4000
     params["batch_size"] = 128 
 
     print(colored('Training...', 'green'))
