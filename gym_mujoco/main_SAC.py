@@ -14,6 +14,7 @@ import argparse
 from SAC import SAC
 from datetime import datetime
 from termcolor import colored
+import sys
 
 def test(agent, options):
     env = quad.QuadrotorPlusHoverEnv()
@@ -54,7 +55,7 @@ def train(params):
         ep_rwd = 0
 
         while not done:
-            # env.render()
+            env.render()
             
             act = agent.step(obs0)
 
@@ -96,7 +97,9 @@ if __name__ == "__main__":
     params["batch_size"] = 128 
 
     print(colored('Training...', 'green'))
-    agent, returns = train(params)
+    # agent, returns = train(params)
+
+    sys.exit()
 
     data["returns"] = returns
 

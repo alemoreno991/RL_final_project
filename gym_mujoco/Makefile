@@ -1,7 +1,7 @@
 VENV = venv
 
 # If `venv/bin/python` exists, it is used. If not, use PATH to find python.
-SYSTEM_PYTHON  = $(shell which python3.7)	# Make sure that you have python3.7 in your system!!
+SYSTEM_PYTHON  = $(shell which python3.6)	# Make sure that you have python3.7 in your system!!
 PYTHON         = $(or $(wildcard venv/bin/python), $(SYSTEM_PYTHON))
 
 YELLOW=\033[1;33m
