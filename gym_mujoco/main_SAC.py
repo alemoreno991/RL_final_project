@@ -15,6 +15,8 @@ from SAC import SAC
 from datetime import datetime
 from termcolor import colored
 
+from plotter import live_plotter
+
 def test(agent, options):
     env = quad.QuadrotorPlusHoverEnv()
     done = False
@@ -22,7 +24,7 @@ def test(agent, options):
     action = [] 
     state = [obs0]
     while not done:
-        # env.render()
+        # env.render()  # Uncomment to visualize the trainning process
         
         act = agent.step(obs0)
         action.append(act)
@@ -30,6 +32,8 @@ def test(agent, options):
         obs1, _, done, _ = env.step(act)
         state.append(obs1)
     
+    env.close()
+
     return action, state
 
 def train(params): 
@@ -48,13 +52,13 @@ def train(params):
     batch_size = params["batch_size"]
     iteration = 0
     y = []
-    for _ in range(nepisode):
+    for i_episode in range(nepisode):
         done = False
         obs0 = env.reset()
         ep_rwd = 0
 
         while not done:
-            # env.render()
+            # env.render()  # Uncomment to visualize the trainning process
             
             act = agent.step(obs0)
 
@@ -71,6 +75,7 @@ def train(params):
             iteration += 1
 
         y.append(ep_rwd)
+        print('Ep: %i' % i_episode, "|Ep_r: %i" % ep_rwd)
 
     env.close()
     
@@ -78,22 +83,27 @@ def train(params):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--run', type=int)
-    parser.add_argument('--time', type=str)
+    parser.add_argument('--run', type=int, default=0)
+    parser.add_argument('--suffix', type=str)
+    parser.add_argument('--episodes', type=int, default=3500)
+    parser.add_argument('--lr_actor', type=float, default=1e-4)
+    parser.add_argument('--lr_critic', type=float, default=1e-3)
+    parser.add_argument('--gamma', type=float, default=.99)
+    parser.add_argument('--batch_size', type=int, default=128)
     args = parser.parse_args()
     i = args.run
-    time = args.time
+    suffix = args.suffix
     
     data = {}
     params = {}
     params["act_dim"] = 4
     params["obs_dim"] = 18
-    params["lr_actor"]  = 1e-4
-    params["lr_critic"] = 1e-3 
-    params["gamma"] = 0.99
+    params["lr_actor"]  = args.lr_actor
+    params["lr_critic"] = args.lr_critic
+    params["gamma"] = args.gamma
     params["tau"] = 0.995
-    params["num_episodes"] = 4000
-    params["batch_size"] = 128 
+    params["num_episodes"] = args.episodes
+    params["batch_size"] = args.batch_size
 
     print(colored('Training...', 'green'))
     agent, returns = train(params)
@@ -102,7 +112,7 @@ if __name__ == "__main__":
 
     print(colored('Running Test 1...', 'green'))
     options = {}
-    pos_0 = [1.,1.,10.]
+    pos_0 = [0., 0., 1]
     quat = [1., 0., 0., 0.]
     vel = [0.,0.,0.]
     ang_vel = [0.,0.,0.]
@@ -112,20 +122,20 @@ if __name__ == "__main__":
     data["test0"]["actions"], data["test0"]["states"] = test(agent, options)
 
     print(colored('Running Test 2...', 'green'))
-    pos_0 = [0.,1.,1.]
-    quat = [1., 0., 0., 0.]
-    vel = [0.,0.,-1.]
-    ang_vel = [0.3,0.,0.]
-    
+    options = {}
+    pos_0 = [0., 0., 1.]
+    quat = [1., 0.9, 0.08, 0.8]
+    vel = [0.,0.,0.]
+    ang_vel = [0.,0.,0.]
     options["custom"] = pos_0 + quat + vel + ang_vel
     data["test1"] = {}
     data["test1"]["actions"], data["test1"]["states"] = test(agent, options)
 
     print(colored('Running Test 3...', 'green'))
     options = {}
-    pos_0 = [1.,0.,0.5]
-    quat = [1., -0.08, 0.05, 0.]
-    vel = [0.,0.,0.]
+    pos_0 = [0., 0., 1.]
+    quat = [1., 0.1, -0.06, 1.8]
+    vel = [1.,0.7,-0.5]
     ang_vel = [0.,0.,0.]
     
     options["custom"] = pos_0 + quat + vel + ang_vel
@@ -133,15 +143,16 @@ if __name__ == "__main__":
     data["test2"]["actions"], data["test2"]["states"] = test(agent, options)
 
     print(colored('Running Test 4...', 'green'))
-    pos_0 = [-2.,-2.,0.]
-    quat = [1., -0.48, 0.35, 0.15]
-    vel = [-5.,2.,-3.]
-    ang_vel = [-0.1,0.2,0.7]
+    options = {}
+    pos_0 = [0., 0., 1.]
+    quat = [1., -0.2, 0.16, 1.8]
+    vel = [-5.3,1.57,3.25]
+    ang_vel = [1.3,-0.5,3.14]
     
     options["custom"] = pos_0 + quat + vel + ang_vel
     data["test3"] = {}
     data["test3"]["actions"], data["test3"]["states"] = test(agent, options)
 
     print(colored('Saving information...', 'green'))
-    with open('data/SAC_run{}_{}.pkl'.format(i, time), 'wb') as f:
+    with open('data/SAC_run{}_{}.pkl'.format(i, suffix), 'wb') as f:
         pickle.dump(data, f)
