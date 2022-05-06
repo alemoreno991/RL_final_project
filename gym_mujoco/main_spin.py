@@ -17,8 +17,7 @@ if __name__ == "__main__":
     parser.add_argument('--run', type=int)
     args = parser.parse_args()
     
-    env = quad.QuadrotorPlusHoverEnv(randomize_reset=True)
-    # env_fn = lambda : gym.make('QuadrotorPlusHoverEnv-v0')
+    env = quad.QuadrotorPlusHoverEnv(randomize_reset=True, env_bounding_box=5)
     env_fn = lambda : env
 
     # logger_kwargs_sac = dict(output_dir='sac{}'.format(args.run), exp_name='quad_sac{}'.format(args.run))

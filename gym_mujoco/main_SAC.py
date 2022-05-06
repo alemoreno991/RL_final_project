@@ -99,8 +99,6 @@ if __name__ == "__main__":
     print(colored('Training...', 'green'))
     # agent, returns = train(params)
 
-    sys.exit()
-
     data["returns"] = returns
 
     print(colored('Running Test 1...', 'green'))
