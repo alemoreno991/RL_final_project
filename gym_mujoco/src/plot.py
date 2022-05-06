@@ -8,34 +8,32 @@ plt.rcParams["figure.figsize"] = (16,10)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_runs', type=int, default=2)
-parser.add_argument('--suffix', type=str, default="")
+
+parser.add_argument('--time', type=str, default="")
+parser.add_argument('--condition', type=str, default="")
+
+# CLI to configure the algorithm we wanna train the agent with
+parser.add_argument('--SAC',  action='store', default=False, const=True, nargs="?")
+parser.add_argument('--TD3',  action='store', default=False, const=True, nargs="?")
+parser.add_argument('--DDPG', action='store', default=False, const=True, nargs="?")
+parser.add_argument('--PPO',  action='store', default=False, const=True, nargs="?")
+parser.add_argument('--VPG',  action='store', default=False, const=True, nargs="?")
 args = parser.parse_args()
 
-ALGORITHMS = ["SAC", "DDPG", "PPO"]
-ALGORITHMS = ["TD3"]
+ALGORITHMS = []
+if args.SAC:
+    ALGORITHMS.append("SAC")
+if args.TD3:
+    ALGORITHMS.append("TD3")
+if args.DDPG:
+    ALGORITHMS.append("DDPG")
+if args.PPO:
+    ALGORITHMS.append("PPO")
+if args.VPG:
+    ALGORITHMS.append("VPG")
+
 NUMBER_RUNS = args.num_runs
-NUMBER_TESTS = 1
-
-file_suffix = args.suffix
-###############################################################################
-#   Load information
-###############################################################################
-
-# solutions_returns = {}
-# for algorithm in ALGORITHMS:
-#     returns = np.array([])
-#     # The information comming from the training is of fixed lenght
-#     for run in range(NUMBER_RUNS):
-#         filepath = "./data/{}_run{}_{}.pkl".format(algorithm,run,file_suffix)
-#         with open(filepath, 'rb') as f:
-#             obj = pkl.load(f)
-
-#         if len(returns)==0:
-#             returns = np.hstack((returns, np.array(obj["returns"])))
-#         else:
-#             returns = np.vstack((returns, np.array(obj["returns"])))
-
-#     solutions_returns[algorithm] = returns
+NUMBER_TESTS = 4
 
 #------------------------------------------------------------------------------
 def process_test(test):
@@ -93,7 +91,7 @@ for algorithm in ALGORITHMS:
         actions = []
         states = []
         for run in range(NUMBER_RUNS):
-            filepath = "./data/TD3_test.pkl".format(algorithm,run,file_suffix)
+            filepath = "./output/{}_{}_{}_{}.pkl".format(args.time, algorithm, args.condition, run)
             with open(filepath, 'rb') as f:
                 obj = pkl.load(f)
             
@@ -104,8 +102,9 @@ for algorithm in ALGORITHMS:
         tests["test{}".format(test)]["actions"], tests["test{}".format(test)]["states"] = process_test_over_runs(actions, states)
 
     solutions_tests[algorithm] = tests
+
 ###############################################################################
-#   Create the statistical plot for cummulative reward
+#   Create the statistical plot for state (with different initial conditions)
 ###############################################################################
 color = [
     "blue",
@@ -113,29 +112,7 @@ color = [
     "green"
 ]
 
-# for algo_idx, algorithm in enumerate(ALGORITHMS):
-#     returns = solutions_returns[algorithm]
 
-#     mu = returns.mean(axis=0)
-#     sigma = returns.std(axis=0)
-#     t = np.arange(len(mu))
-
-#     if algo_idx == 0:
-#         fig, ax = plt.subplots(1)
-#     ax.plot(t, mu, lw=2, label=algorithm, color=color[algo_idx])
-#     ax.fill_between(t, mu+sigma, mu-sigma, facecolor=color[algo_idx], alpha=0.25)
-#     ax.set_title("Statistical analysis of cummulative reward per episode")
-#     ax.legend(loc='upper left')
-#     ax.set_xlabel('episodes')
-#     ax.set_ylabel('Cummulative reward')
-#     ax.grid()
-
-#     plt.savefig("./img/returns_{}.png".format(file_suffix))
-
-
-###############################################################################
-#   Create the statistical plot for state (with different initial conditions)
-###############################################################################
 def runPlotter(data, height, width, subplot_idx, legend, y_label,filename,append=False,color='blue',ax=None,fig=None):
     if not append:
         fig, ax = plt.subplots(height,width)
@@ -207,7 +184,7 @@ for algo_idx, algorithm in enumerate(ALGORITHMS):
             legend=algorithm,
             y_label=y_label,
             color=color[algo_idx],
-            filename='./img/state_test{}_{}.png'.format(test,file_suffix),
+            filename="img/{}_{}_{}_states.png".format(args.time, algorithm, args.condition),
             append=flag_append[test],
             ax=axHandle[test],
             fig=figHandle[test]
@@ -249,8 +226,51 @@ for algo_idx, algorithm in enumerate(ALGORITHMS):
             legend=legend[algo_idx],
             y_label=y_label,
             color=color[algo_idx],
-            filename='./img/actions_test{}_{}.png'.format(test,file_suffix),
+            filename="img/{}_{}_{}_actions.png".format(args.time, algorithm, args.condition),
             append=append_flag,
             ax=axHandle[test],
             fig=figHandle[test]
         )
+
+
+###############################################################################
+#   Load returns
+###############################################################################
+
+# solutions_returns = {}
+# for algorithm in ALGORITHMS:
+#     returns = np.array([])
+#     # The information comming from the training is of fixed lenght
+#     for run in range(NUMBER_RUNS):
+#         filepath = "./data/{}_run{}_{}.pkl".format(algorithm,run,file_suffix)
+#         with open(filepath, 'rb') as f:
+#             obj = pkl.load(f)
+
+#         if len(returns)==0:
+#             returns = np.hstack((returns, np.array(obj["returns"])))
+#         else:
+#             returns = np.vstack((returns, np.array(obj["returns"])))
+
+#     solutions_returns[algorithm] = returns
+
+###############################################################################
+#   Create the statistical plot for cummulative reward
+###############################################################################
+# for algo_idx, algorithm in enumerate(ALGORITHMS):
+#     returns = solutions_returns[algorithm]
+
+#     mu = returns.mean(axis=0)
+#     sigma = returns.std(axis=0)
+#     t = np.arange(len(mu))
+
+#     if algo_idx == 0:
+#         fig, ax = plt.subplots(1)
+#     ax.plot(t, mu, lw=2, label=algorithm, color=color[algo_idx])
+#     ax.fill_between(t, mu+sigma, mu-sigma, facecolor=color[algo_idx], alpha=0.25)
+#     ax.set_title("Statistical analysis of cummulative reward per episode")
+#     ax.legend(loc='upper left')
+#     ax.set_xlabel('episodes')
+#     ax.set_ylabel('Cummulative reward')
+#     ax.grid()
+
+#     plt.savefig("./img/returns_{}.png".format(file_suffix))
