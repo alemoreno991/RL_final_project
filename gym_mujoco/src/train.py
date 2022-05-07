@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument('--randomize_reset', action='store', default=False, const=True, nargs="?")
     parser.add_argument('--disorient', action='store', default=False, const=True, nargs="?")
     parser.add_argument('--observation_noise_std', type=float, default=0)
-    parser.add_argument('--env_bounding_box', type=float, default=2.0)
+    parser.add_argument('--env_bounding_box', type=float, default=1.2)
     parser.add_argument('--init_max_vel', type=float, default=0.5)
     parser.add_argument('--init_max_angular_vel', type=float, default=0.1*np.pi)
     parser.add_argument('--init_max_attitude', type=float, default= np.deg2rad(60))
