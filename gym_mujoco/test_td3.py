@@ -10,7 +10,7 @@ from spinup.utils.logx import EpochLogger
 import gym_multirotor.envs.mujoco.quadrotor_plus_hover as quad
 import pickle
 
-def test_td3(env_fn, ac, seed=0, max_ep_len=400):
+def test_td3(env_fn, ac, seed=0, max_ep_len=4000):
 
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -29,6 +29,8 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=400):
         a += noise_scale * np.random.randn(act_dim)
         return np.clip(a, -act_limit, act_limit)
 
+    testflag = False
+
     options = {}
     pos_0 = [2.,0.,3]
     quat = [1., 0,0,0]
@@ -36,20 +38,29 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=400):
     ang_vel = [0.,0.,0.]
     options["custom"] = pos_0 + quat + vel + ang_vel
 
-    o, d, ep_ret, ep_len = test_env.reset(options), False, 0, 0
+    o, d, ep_len = test_env.reset(options), False, 0
 
     actions = []
     states = [o]
 
     while not(d or (ep_len == max_ep_len)):
-        # test_env.render()
+        test_env.render()
         action = get_action(o, 0)
-        o, r, d, _ = test_env.step(action)
-        ep_ret += r
-        ep_len += 1
+        o, _, d, _ = test_env.step(action)
+        
+        if ep_len % 10 == 0:
+            print(o)
+        if not testflag and (abs(o[0]) < 0.1 and abs(o[1]) < 0.1 and abs(o[2]) < 0.1):
+            print('testflag!')
+            testflag = True
+
+        if testflag:
+            o[0] += 2
 
         actions.append(action)
         states.append(o)
+
+        ep_len += 1
     
     return actions, states
 
@@ -60,7 +71,7 @@ if __name__ == '__main__':
     parser.add_argument('--l', type=int, default=2)
     args = parser.parse_args()
 
-    env = quad.QuadrotorPlusHoverEnv(randomize_reset=True, env_bounding_box=10)
+    env = quad.QuadrotorPlusHoverEnv(randomize_reset=True, env_bounding_box=100)
 
     loaded_ac = torch.load('./rand_init_td30/pyt_save/model.pt')
     env.reset()
