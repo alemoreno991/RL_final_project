@@ -10,7 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--num_runs', type=int, default=2)
 
 parser.add_argument('--time', type=str, default="")
-parser.add_argument('--condition', type=str, default="")
+parser.add_argument('--train_condition', type=str, default="moderate")
+parser.add_argument('--initial_condition', type=str, default="vanilla")
 
 # CLI to configure the algorithm we wanna train the agent with
 parser.add_argument('--SAC',  action='store', default=False, const=True, nargs="?")
@@ -91,7 +92,7 @@ for algorithm in ALGORITHMS:
         actions = []
         states = []
         for run in range(NUMBER_RUNS):
-            filepath = "./output/{}_{}_{}_{}.pkl".format(args.time, algorithm, args.condition, run)
+            filepath = "./output/{}_{}_{}_{}_{}.pkl".format(args.time, algorithm, args.train_condition, run, args.initial_condition )
             with open(filepath, 'rb') as f:
                 obj = pkl.load(f)
             
@@ -144,18 +145,18 @@ subplot_idx = [
 legend = ALGORITHMS
 
 y_label = [
-    "Position - X",
-    "Position - Y",
-    "Position - Z",
-    "Velocity - X",
-    "Velocity - Y",
-    "Velocity - Z",
-    "Roll",
-    "Pitch",
-    "Yaw",
-    "Angular rate - X",
-    "Angular rate - Y",
-    "Angular rate - Z"
+    "Error Pos_X [m]",
+    "Error Pos_Y [m]",
+    "Error Pos_Z [m]",
+    "Vel_X [m/s]",
+    "Vel_Y [m/s]",
+    "Vel_Z [m/s]",
+    "Roll [deg]",
+    "Pitch [deg]",
+    "Yaw [deg]",
+    "Angular rate - X [deg/s]",
+    "Angular rate - Y [deg/s]",
+    "Angular rate - Z [deg/s]"
 ]
 
 axHandle  = [None]*NUMBER_TESTS
@@ -169,12 +170,12 @@ for algo_idx, algorithm in enumerate(ALGORITHMS):
         pos = data[:,:3,:]
         RBI = data[:,3:12,:]
         vel = data[:,12:15,:]
-        omegaB = data[:,15:,:]
+        omegaB = np.rad2deg(data[:,15:,:])
         
         data = np.hstack((pos,vel,vel,omegaB))
         for i in range(RBI.shape[0]):
             for k in range(NUMBER_RUNS):
-                data[i,6:9,k] = dcm2euler(RBI[i,:,k].reshape(3,3))
+                data[i,6:9,k] = np.rad2deg(dcm2euler(RBI[i,:,k].reshape(3,3)))
 
         figHandle[test], axHandle[test] = runPlotter(
             data, 
@@ -184,7 +185,7 @@ for algo_idx, algorithm in enumerate(ALGORITHMS):
             legend=algorithm,
             y_label=y_label,
             color=color[algo_idx],
-            filename="img/{}_{}_{}_states.png".format(args.time, algorithm, args.condition),
+            filename="img/{}_{}_states_{}_{}.png".format(args.time, args.train_condition, test, args.initial_condition),
             append=flag_append[test],
             ax=axHandle[test],
             fig=figHandle[test]
@@ -226,7 +227,7 @@ for algo_idx, algorithm in enumerate(ALGORITHMS):
             legend=legend[algo_idx],
             y_label=y_label,
             color=color[algo_idx],
-            filename="img/{}_{}_{}_actions.png".format(args.time, algorithm, args.condition),
+            filename="img/{}_{}_actions_{}_{}.png".format(args.time, args.train_condition, test, args.initial_condition),
             append=append_flag,
             ax=axHandle[test],
             fig=figHandle[test]

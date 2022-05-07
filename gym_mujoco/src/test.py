@@ -38,12 +38,12 @@ def test(agent_model, initial_cond, seed=0, max_ep_len=400):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', type=str)
+    parser.add_argument('--input_condition', type=str)
     parser.add_argument('--agent', type=str)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
 
-    init_conditions = read_json(args.input)
+    init_conditions = read_json("input/" + args.input_condition + ".json")
 
     data = {}
     for i in range(len(init_conditions)):
@@ -57,5 +57,6 @@ if __name__ == '__main__':
         data["test{}".format(i)] = {}
         data["test{}".format(i)]["actions"], data["test{}".format(i)]["states"] = test( args.agent + '/pyt_save/model.pt', X0)
 
-    with open(args.output, 'wb') as f:
+    #           train               init_condition
+    with open(args.output + "_" + args.input_condition + ".pkl", 'wb') as f:
         pickle.dump(data, f)
