@@ -14,10 +14,42 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
         frame_skip (int): Number of frames to skip before application of next action command to the environment from the control policy.
     """
 
-    def __init__(self, xml_name="quadrotor_plus.xml", frame_skip=5, env_bounding_box=1.2, randomize_reset=False):
+    def __init__(self, xml_name="quadrotor_plus.xml",
+                 max_time_steps=1000,
+                 randomize_reset=True,
+                 disorient=True,
+                 observation_noise_std=0,
+                 env_bounding_box=1.2,
+                 init_max_vel=0.5,
+                 init_max_angular_vel=0.1*np.pi,
+                 init_max_attitude=np.pi/3.0,
+                 bonus_to_reach_goal=15.0,
+                 max_reward_for_velocity_towards_goal=2.0,
+                 position_reward_constant=5.0,
+                 orientation_reward_constant=0.02,
+                 linear_velocity_reward_constant=0.01,
+                 angular_velocity_reward_constant=0.001,
+                 action_reward_constant=0.0025,
+                 reward_for_staying_alive=5.0,
+        ):
         super().__init__(xml_name=xml_name,
-                         frame_skip=frame_skip,
-                         env_bounding_box=env_bounding_box, randomize_reset=randomize_reset)
+            max_time_steps=max_time_steps,
+            randomize_reset=randomize_reset,
+            disorient=disorient,
+            observation_noise_std=observation_noise_std,
+            env_bounding_box=env_bounding_box,
+            init_max_vel=init_max_vel,
+            init_max_angular_vel=init_max_angular_vel,
+            init_max_attitude=init_max_attitude,
+            bonus_to_reach_goal=bonus_to_reach_goal,
+            max_reward_for_velocity_towards_goal=max_reward_for_velocity_towards_goal,
+            position_reward_constant=position_reward_constant,
+            orientation_reward_constant=orientation_reward_constant,
+            linear_velocity_reward_constant=linear_velocity_reward_constant,
+            angular_velocity_reward_constant=angular_velocity_reward_constant,
+            action_reward_constant=action_reward_constant,
+            reward_for_staying_alive=reward_for_staying_alive
+        )
 
     @property
     def hover_force(self):
