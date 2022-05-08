@@ -5,12 +5,12 @@
     "batch_size":	100,
     "env_fn":	"<function <lambda> at 0x7f47de330950>",
     "epochs":	70,
-    "exp_name":	"quad_td33",
+    "exp_name":	"TD3_vanilla",
     "gamma":	0.99,
     "logger":	{
         "<spinup.utils.logx.EpochLogger object at 0x7f479f01b748>":	{
             "epoch_dict":	{},
-            "exp_name":	"quad_td33",
+            "exp_name":	"TD3_vanilla",
             "first_row":	true,
             "log_current_row":	{},
             "log_headers":	[],
@@ -23,7 +23,7 @@
         }
     },
     "logger_kwargs":	{
-        "exp_name":	"quad_td33",
+        "exp_name":	"TD3_vanilla",
         "output_dir":	"td33"
     },
     "max_ep_len":	5000,

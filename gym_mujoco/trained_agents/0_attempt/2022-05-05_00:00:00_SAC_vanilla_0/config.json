@@ -3,31 +3,31 @@
     "actor_critic":	"MLPActorCritic",
     "alpha":	0.2,
     "batch_size":	100,
-    "env_fn":	"<function <lambda> at 0x7f9cdb5f6950>",
-    "epochs":	1,
-    "exp_name":	"quad_sac0",
+    "env_fn":	"<function <lambda> at 0x7fb03e35d950>",
+    "epochs":	70,
+    "exp_name":	"SAC_vanilla",
     "gamma":	0.99,
     "logger":	{
-        "<spinup.utils.logx.EpochLogger object at 0x7f9c109e7c88>":	{
+        "<spinup.utils.logx.EpochLogger object at 0x7faf6f73fcf8>":	{
             "epoch_dict":	{},
-            "exp_name":	"quad_sac0",
+            "exp_name":	"SAC_vanilla",
             "first_row":	true,
             "log_current_row":	{},
             "log_headers":	[],
-            "output_dir":	"sac0",
+            "output_dir":	"sac1",
             "output_file":	{
-                "<_io.TextIOWrapper name='sac0/progress.txt' mode='w' encoding='UTF-8'>":	{
+                "<_io.TextIOWrapper name='sac1/progress.txt' mode='w' encoding='UTF-8'>":	{
                     "mode":	"w"
                 }
             }
         }
     },
     "logger_kwargs":	{
-        "exp_name":	"quad_sac0",
-        "output_dir":	"sac0"
+        "exp_name":	"SAC_vanilla",
+        "output_dir":	"sac1"
     },
     "lr":	0.001,
-    "max_ep_len":	50,
+    "max_ep_len":	5000,
     "num_test_episodes":	10,
     "polyak":	0.995,
     "replay_size":	1000000,
