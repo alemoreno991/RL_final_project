@@ -1,0 +1,40 @@
+{
+    "ac_kwargs":	{},
+    "actor_critic":	"MLPActorCritic",
+    "alpha":	0.2,
+    "batch_size":	100,
+    "env_fn":	"<function <lambda> at 0x7f994de8fe18>",
+    "epochs":	25,
+    "exp_name":	"quad_3",
+    "gamma":	0.99,
+    "logger":	{
+        "<spinup.utils.logx.EpochLogger object at 0x7f998e2cdeb8>":	{
+            "epoch_dict":	{},
+            "exp_name":	"quad_3",
+            "first_row":	true,
+            "log_current_row":	{},
+            "log_headers":	[],
+            "output_dir":	"trained_agents/2022-05-07_01:29:57_SAC_moderate_3",
+            "output_file":	{
+                "<_io.TextIOWrapper name='trained_agents/2022-05-07_01:29:57_SAC_moderate_3/progress.txt' mode='w' encoding='UTF-8'>":	{
+                    "mode":	"w"
+                }
+            }
+        }
+    },
+    "logger_kwargs":	{
+        "exp_name":	"quad_3",
+        "output_dir":	"trained_agents/2022-05-07_01:29:57_SAC_moderate_3"
+    },
+    "lr":	0.001,
+    "max_ep_len":	3000,
+    "num_test_episodes":	10,
+    "polyak":	0.995,
+    "replay_size":	1000000,
+    "save_freq":	1,
+    "seed":	0,
+    "start_steps":	10000,
+    "steps_per_epoch":	4000,
+    "update_after":	1000,
+    "update_every":	50
+}

@@ -15,16 +15,15 @@ if __name__ == "__main__":
 
     # CLI to configure output data path
     parser.add_argument('--filename', type=str)
-
+    
     # CLI to configure the number of runs
     parser.add_argument('--runs', type=int, default=1)
     
     # CLI to configure the maximum number of episodes and epochs
-    parser.add_argument('--epochs', type=int, default=50)
-    parser.add_argument('--episodes', type=int, default=10000)
+    parser.add_argument('--epochs', type=int, default=30)
+    parser.add_argument('--episodes', type=int, default=3000)
     
     # CLI to tune the environment
-    parser.add_argument('--max_time_steps', type=int, default=10000)
     parser.add_argument('--randomize_reset', action='store', default=False, const=True, nargs="?")
     parser.add_argument('--disorient', action='store', default=False, const=True, nargs="?")
     parser.add_argument('--observation_noise_std', type=float, default=0)
@@ -51,7 +50,6 @@ if __name__ == "__main__":
 
     # Configure the environment as defined by the user CLI
     env = quad.QuadrotorPlusHoverEnv(
-        max_time_steps=args.max_time_steps,
         randomize_reset=args.randomize_reset,
         disorient=args.disorient,
         observation_noise_std=args.observation_noise_std,
