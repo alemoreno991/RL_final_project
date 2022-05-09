@@ -1,61 +1,56 @@
-# gym_multirotor
+# Reinforcement Learning - Final Project
 
-Gym to train reinforcement learning agents on UAV platforms
+Take a look at the different training stages of the agent
 
-Quadrotor  |  Tiltrotor
-:-------------------------:|:-------------------------:
-<img src="media/quadrotor-babbling.gif" width="300" height="300"/> | <img src="media/tiltrotor-babbling.gif" width="300" height="300"/>
+baby | teenager | adult
+:-------------------------:|:-------------------------:|:-------------------------:|
+<img src="media/baby.gif" width="300" height="300"/> | <img src="media/teenager.gif" width="300" height="300"/> | <img src="media/adult.gif" width="300" height="300"/>
+# Environment
 
-## Requirements
-This package has been tested on Ubuntu 18.04 with `python 3.6`.
+A detailed explanation of the way the MuJoCo-based environment works and how to install it can be found [here](ENVIRONMENT.md)
+
+In case the reader is interested to check out the home-made 
+quad simulator it can be found under `./homemade_quad_simulator`.
+
+# Algorithms
+
+To begin with, make sure to install the dependencies for this project
 ```
-python=3.6
-numpy
-scipy
-gym
-mujoco_py
-```
-
-* To install `gym` refer [this link](https://github.com/openai/gym).
-* To install `MuJoCo` refer [this link](https://github.com/openai/mujoco-py#obtaining-the-binaries-and-license-key).
-
-## Installation
-To install, you will have to clone this repository on your personal machine. Follow the below commands:  
-```
-$ git clone https://github.com/adipandas/gym_multirotor.git
+$ git clone <this_repository>
 $ cd gym_multirotor
+$ make
+$ source venv/bin/activate
 $ pip install -e .
 ```
 
-## Environments
-List of environments available in this repository include:  
+## Initial implementation
+The first implementation of the SAC, DDPG and PPO can be found in 
+`./first_algorithm_implementation`. These have the disadvantage of not allowing
+the user to save the trained agents. Therefore, the whole process has to be 
+repeated if one wants to test a new thing.
 
-Environment-ID | Description
---- | ---
-`QuadrotorPlusHoverEnv-v0` | Quadrotor with `+` configuration with task to hover.
-`TiltrotorPlus8DofHoverEnv-v0` | Tiltrotor with `+` configuration.
-`QuadrotorXHoverEnv-v0` | Quadrotor with `x` configuration with a task to hover.
+## Final implementation
+The final implementation of the algorithms can be found under 
+`./src`. 
 
-### References
-[REFERENCES.md](REFERENCES.md)
+The openAI Spinning Up framework was used. So, you'll FIRST have to 
+install it as described [here](SPINNING_UP.md). Then, some scripts to 
+automate and standarize the workflow across the different members of the 
+team's platforms was developed. 
 
-
-## Citation
-
-If you find this work useful, please cite our work:
+To run the automation scripts:  
 ```
-@inproceedings{deshpande2020developmental,
-  title={Developmental reinforcement learning of control policy of a quadcopter UAV with thrust vectoring rotors},
-  author={Deshpande, Aditya M and Kumar, Rumit and Minai, Ali A and Kumar, Manish},
-  booktitle={Dynamic Systems and Control Conference},
-  volume={84287},
-  pages={V002T36A011},
-  year={2020},
-  organization={American Society of Mechanical Engineers}
-}
+$ ./train_first_attempt.sh
+$ ./test.sh
+$ ./plot.sh
 ```
+**Note: might take a lot of time** 
 
-## Notes:
-* Some of the environment parameters have been updated but the task of these drone environments still remains the same as what was discussed in the paper.
-* I will keep on updating these codes as I make further progress in my work.
-
+* Once your training is done, the agents will be saved under `./trained_agents`.
+* The testing stage requires the user to define the initial conditions
+from which to start the episode and apply the policy learnt by the agent. The 
+directory `./input` contains `.json` with the {vanilla, moderate and 
+extreme} initial conditions. At the end of testing, the directory `./output` 
+will contain all the information needed for plotting (state vector and 
+actions) in `.pkl` format. 
+* The plotting is the final step. The graphs are stored in `./img`.

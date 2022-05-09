@@ -4,13 +4,13 @@
     "clip_ratio":	0.2,
     "env_fn":	"<function <lambda> at 0x7fb03e35d950>",
     "epochs":	70,
-    "exp_name":	"quad_ppo1",
+    "exp_name":	"PPO_vanilla",
     "gamma":	0.99,
     "lam":	0.97,
     "logger":	{
         "<spinup.utils.logx.EpochLogger object at 0x7fafffa98080>":	{
             "epoch_dict":	{},
-            "exp_name":	"quad_ppo1",
+            "exp_name":	"PPO_vanilla",
             "first_row":	true,
             "log_current_row":	{},
             "log_headers":	[],
@@ -23,7 +23,7 @@
         }
     },
     "logger_kwargs":	{
-        "exp_name":	"quad_ppo1",
+        "exp_name":	"PPO_vanilla",
         "output_dir":	"ppo1"
     },
     "max_ep_len":	5000,
