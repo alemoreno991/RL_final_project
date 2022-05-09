@@ -31,9 +31,14 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=4000):
 
     testflag = False
 
+    traj = [[0, 0], []]
+    traj = [[0, 0], [-1, 0], [0, -1], [1, 0], [0, 1]]
+    offset_x = 0
+    offset_y = 0
+
     options = {}
-    pos_0 = [2.,0.,3]
-    quat = [1., 0,0,0]
+    pos_0 = [0,0.,3]
+    quat = [1, 0,0,0]
     vel = [0.,0.,0.]
     ang_vel = [0.,0.,0.]
     options["custom"] = pos_0 + quat + vel + ang_vel
@@ -43,23 +48,32 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=4000):
     actions = []
     states = [o]
 
+    ct = 0
+
+    wait = 0
+
     while not(d or (ep_len == max_ep_len)):
         test_env.render()
         action = get_action(o, 0)
         o, _, d, _ = test_env.step(action)
-        
-        if ep_len % 10 == 0:
-            print(o)
-        if not testflag and (abs(o[0]) < 0.1 and abs(o[1]) < 0.1 and abs(o[2]) < 0.1):
-            print('testflag!')
-            testflag = True
 
-        if testflag:
-            o[0] += 2
+        o[0] += offset_x
+        o[1] += offset_y
+
+        states.append(test_env.get_state())
+
+        if wait < 50 and (abs(o[0]) < 0.02 and abs(o[1]) < 0.02 and abs(o[2]) < 0.02):
+            wait += 1
+        elif (abs(o[0]) < 0.02 and abs(o[1]) < 0.02 and abs(o[2]) < 0.02):
+            wait = 0
+            ct += 1
+            if (ct > 4):
+                continue
+            offset_x += traj[ct][0]
+            offset_y += traj[ct][1]
 
         actions.append(action)
-        states.append(o)
-
+        
         ep_len += 1
     
     return actions, states
@@ -73,11 +87,11 @@ if __name__ == '__main__':
 
     env = quad.QuadrotorPlusHoverEnv(randomize_reset=True, env_bounding_box=100)
 
-    loaded_ac = torch.load('./rand_init_td30/pyt_save/model.pt')
+    loaded_ac = torch.load('./sq_td3_diffR1/pyt_save/model.pt')
     env.reset()
     data = {}
     data["test0"] = {}
     data["test0"]["actions"], data["test0"]["states"] = test_td3(lambda : env, loaded_ac)
 
-    with open('data/TD3_test.pkl', 'wb') as f:
+    with open('data/square.pkl', 'wb') as f:
         pickle.dump(data, f)

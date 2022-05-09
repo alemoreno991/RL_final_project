@@ -14,7 +14,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', type=int)
     parser.add_argument('--bbox', type=int, default=1.2)
-    parser.add_argument('--epochs', type=int, default=22)
+    parser.add_argument('--epochs', type=int, default=60)
     args = parser.parse_args()
     
     env = quad.QuadrotorPlusHoverEnv(randomize_reset=True, env_bounding_box=args.bbox)
@@ -24,6 +24,6 @@ if __name__ == "__main__":
     if args.bbox != 1.2:
         bboxstr = "bbox{}".format(args.bbox)
 
-    logger_kwargs_td3 = dict(output_dir='rand_init_td3{}{}'.format(args.run, bboxstr), exp_name='rand_init_quad_td3{}'.format(args.run))
+    logger_kwargs_td3 = dict(output_dir='sq_td3_diffR{}{}'.format(args.run, bboxstr), exp_name='rand_init_quad_td3{}'.format(args.run))
 
     td3(env_fn=env_fn, logger_kwargs=logger_kwargs_td3, max_ep_len=5000, epochs=args.epochs)

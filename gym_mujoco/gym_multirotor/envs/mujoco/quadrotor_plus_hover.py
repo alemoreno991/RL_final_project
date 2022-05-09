@@ -32,6 +32,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
                  action_reward_constant=0.0025,
                  reward_for_staying_alive=5.0,
         ):
+        self.initial_position = None
         super().__init__(xml_name=xml_name,
             max_time_steps=max_time_steps,
             randomize_reset=randomize_reset,
@@ -118,6 +119,9 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
             ob += self.np_random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
         return ob, reward, done, info
 
+    def get_state(self):
+        return self.sim.data.qpos.copy()
+
     def _get_obs(self):
         """
         Full observation of the environment.
@@ -163,9 +167,20 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
                 - reward_info (dict): Dictionary of reward for specific state values. This dictionary contains the reward values corresponding to the following keys - (position, orientation, linear_velocity, angular_velocity, action, alive_bonus, extra_bonus, extra_penalty).
         """
 
+        # get distance from line between
+        dist_from_line = 0
+        if self.initial_position is not None:
+            x0 = np.array(self.get_state()[0:3]) #x0
+            x1 = np.array(self.initial_position) #x1
+            x2 = self.desired_position #x2
+
+            dist_from_line = self.norm(np.cross((x0 - x1),(x0 - x2))) / self.norm(x2 - x1)
+
+        line_penalty = -10.0 * dist_from_line
+
         alive_bonus = self.reward_for_staying_alive
 
-        reward_position = self.norm(ob[0:3]) * (-self.position_reward_constant)
+        reward_position = (ob[0] + ob[1] + ob[2]) * (-self.position_reward_constant)
 
         reward_orientation = self.orientation_error(self.sim.data.qpos[3:7]) * (-self.orientation_reward_constant)
 
@@ -183,7 +198,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
         if self.norm(ob[0:3]) > self.error_tolerance_norm:
             reward_velocity_towards_goal += self.reward_velocity_towards_goal(error_xyz=ob[:3], velocity=ob[12:15])
 
-        rewards = (reward_position, reward_orientation, reward_linear_velocity, reward_angular_velocity, reward_action, alive_bonus, extra_bonus, extra_penalty, reward_velocity_towards_goal)
+        rewards = (reward_position, reward_orientation, reward_linear_velocity, reward_angular_velocity, reward_action, alive_bonus, extra_bonus, extra_penalty, reward_velocity_towards_goal, line_penalty)
         reward = sum(rewards) * self.reward_scaling_coefficient
 
         reward_info = dict(
@@ -260,6 +275,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
             # print(params["custom"])
             qpos_init = np.array(params["custom"][0:7])
             qvel_init = np.array(params["custom"][7:])
+        self.initial_position = qpos_init[0:3]
         self.set_state(qpos_init, qvel_init)
         observation = self._get_obs()
         return observation
