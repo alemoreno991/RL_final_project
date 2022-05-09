@@ -1,3 +1,10 @@
+# Reinforcement Learning - Final Project
+
+Take a look at the different training stages of the agent
+
+baby | teenager | adult
+:-------------------------:|:-------------------------:|:-------------------------:|
+<img src="media/baby.gif" width="300" height="300"/> | <img src="media/teenager.gif" width="300" height="300"/> | <img src="media/adult.gif" width="300" height="300"/>
 # Environment
 
 A detailed explanation of the way the MuJoCo-based environment works and how to install it can be found [here](ENVIRONMENT.md)
