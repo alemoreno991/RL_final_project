@@ -1,15 +1,8 @@
 # Reinforcement Learning - Final Project
 
-<center>
-    <iframe 
-        width="500" 
-        height="300" 
-        src="https://www.youtube.com/embed/81Ts0d0QkdI" 
-        frameborder="0" 
-        allowfullscreen
-    >
-    </iframe>
-</center>
+
+[![Presentation](media/presentation_video.png)](http://www.youtube.com/watch?v=81Ts0d0QkdI)
+
 
 Take a look at the different training stages of the agent
 
