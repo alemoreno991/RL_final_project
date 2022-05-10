@@ -1,0 +1,59 @@
+\section{Related Work}
+
+The project started by using a quadrotor simulator developed in another course. It is a high fidelity dynamic simulator developed in python that offers great flexibility to modify and understand the physics behind a drone. However, The simulator was not very fast, and training an RL agent, while technically possible, would require too much time. Therefore, after a literature search, we found a MuJoCo-based quadcopter simulator \cite{adipandas}. Due to the nature of this simulator, our action space was the 4-dimensional vector of voltages to each motor. The work that provided the simulator environment also came with a sample reward function that took into consideration multiple things - (list these things). Many of these things were elements of the reward function we discussed earlier. Although we kept the basic elements of this reward function, during training we had to add more to it and tune the reward function to work better for our purposes. Elements of the reward function we took from the prior work were the penalties relating to distance from goal and velocity magnitudes, and a reward for staying alive. We added a reward term that adds negative reward proportional to the drone's distance from the straight line between the start and goal.
+
+\subsection{Drones and Reinforcement Learning}
+
+There is lots of previous work in training drones to fly with RL, but many, like \cite{quadrl} and \cite{abbeel} use advanced techniques like Model-predictive control and sophisticated reward functions to achieve state-of-the-art results. The goal of our project is to investigate more simpler techniques, such as constructing and tuning a basic reward function, and comparing training performance of different state-of-the-art RL algorithms.
+
+%(cite https://github.com/adipandas/gym_multirotor.git)
+
+Our domain is one with a continuous state and action space. Because of this, The Soft Actor-Critic \cite{sac}, (Twin Delayed) Deep Deterministic Policy Gradient \cite{ddpg} \cite{td3}, and Proximal Policy Optimization algorithms \cite{ppo} were all options we though would be worthwhile to test. The following section is an overview of some of these algorithms. Note that PPO has been omitted because during testing, we found that it performed extremely poorly compared to the others.
+
+\subsection{Deep Deterministic Policy Gradient}
+
+DDPG is an off-policy algorithm for continuous action spaces that learns an action-value function with bellman updates, and simultaneously learns a policy from the action-value function. There are two networks, the actor and the critic. The critic learns the action-value function Q through a modified bellman update that makes use of replay buffers, to stabilize learning and use data more efficiently, and a target policy network. A target network is one that is essentially an average of the previous states of a network that is used as the training target, i.e. What we subtract from Q in the loss function. Because this term depends on Q itself, keeping another network that is an average of the policy network's previous states stabilizes the minimization. The actor's update is much simpler. It is simply a gradient ascent with respect to the actor's parameters that maximizes expected values of the Q-function, using the critic.
+
+Below is an outline of DDPG's learning process after it has stored enough experiences in the replay buffer. Networks and target networks for the actor and the critic are initialized to equal each other. \\
+
+\noindent For each necessary update:
+\begin{enumerate}
+    \item Sample $N$ transitions ${(s, a, r, s^\prime, d), ... }$ from the replay buffer.
+    \item For each of the transitions, compute target values using target networks.
+    \[ t = r + \gamma (1 - \mathbbm{1}_d) Q_{\phi_{targ}}(s^\prime,\mu_{\theta_{targ}}(s^\prime)) \]
+    \item Update Q with gradient descent proportional to average diff with target.
+    \[ \nabla_{\phi} \frac{1}{N} \sum_{\forall(s, a, r, s^\prime, d)} (Q_{\phi}(s, a) - t)^2\]
+    \item Update policy with gradient descent proportional to sum of action values of states.
+    \[ \nabla_{\theta} \frac{1}{N} \sum_{\forall s} Q_{\phi}(s, \mu_{\theta}(s))\]
+    \item Update target networks (Spinning Up uses polyak averages).
+\end{enumerate}
+
+\subsection{Twin Delayed DDPG}
+
+Twin Delayed DDPG, or T3D, addresses weaknesses of the original DDPG algorithm. Because DDPG uses a learned Q-function to learn the policy, the learned policy $\mu_\theta$ will take advantage of errors in the learned Q-function $\Q_{\phi}$. TD3 is mostly similar to DDPG, with the exception of three differences that vastly increase its robustness:
+
+\begin{itemize}
+    \item Sometimes, $Q_{\phi}$ overestimates q-values, which affects policy learning. TD3 learns two Q-functions simultaneously and uses the smaller of the two values in target computation.
+    \item TD3 updates $\mu_\theta$ and $\mu_\theta_{targ}$ less frequently than $\Q_{\phi}$ and $Q_{\phi_{targ}}$. Paper authors recommend updating $\Q_{\phi}$ twice before updating $\mu_\theta$.
+    \item In order to minimize the chance that the policy learns to take advantage of an incorrectly-learned Q-function, gaussian noise is added to $Q_{\phi_{targ}}$.
+\end{itemize}
+
+\subsection{Soft Actor-Critic}
+
+Like DDPG and TD3, Soft Actor-Critic, or SAC, learns a policy in an actor-critic model and is off-policy. Like TD3, it even learns two Q-value functions for the same reasons. Unlike the others, however, it learns a stochastic policy as opposed to a deterministic policy.
+
+SAC's key feature is called entropy regularization. Entropy as defined in RL, is the weighted sum over action probabilities with weight equal to the negative log of the action probability. In a discrete setting, $H(\pi(|s_t)) = - \sum_{a \in A} \pi(a|s_t)\log\pi(a|s_t)$. There is a similar analog for continuous action spaces. Entropy Regularization involves adding $\alpha H(\pi(|s^\prime))$, the entropy of a transition, to $R(s, a, s^\prime)$, the reward of a transition, in the formulation of $V^\pi$ and $Q^\pi$. 
+
+In the pseudocode below, the log of the action probability is subtracted from $Q_{\phi_{targ}}$ when calculating the target and $\Q_{\phi}$ in the policy gradient update. This rewards higher entropy. \\
+
+\noindent For each necessary update:
+\begin{enumerate}
+    \item Sample $N$ transitions ${(s, a, r, s^\prime, d), ... }$ from the replay buffer.
+    \item For each of the transitions, draw $a^\prime$ from $\pi_\theta(|s^\prime)$ and calculate targets.
+    \[ t = r + \gamma (1 - \mathbbm{1}_d) ( \min_{i = 1, 2} Q_{\phi_{targ}}(s^\prime, a^\prime) -\alpha \log \pi_\theta(a^\prime|s^\prime))\]
+    \item Update both Q-functions, for $i = 1, 2$
+    \[ \nabla_{\phi_i} \frac{1}{N} \sum_{\forall(s, a, r, s^\prime, d)} (Q_{\phi}(s, a) - t)^2\]
+    \item Sample $a_\theta$ from $\pi_\theta(|s)$ and update policy.
+    \[ \nabla_{\theta} \frac{1}{N} \sum_{\forall s} ( \min_{i = 1, 2} Q_{\phi_{targ}}(s^\prime, a_\theta(s)) -\alpha \log \pi_\theta(a_\theta(s)|s))\]
+    \item Update target networks (Spinning Up uses polyak averages).
+\end{enumerate}

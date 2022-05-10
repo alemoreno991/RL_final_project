@@ -1,0 +1,34 @@
+\section{Introduction}
+
+Reinforcement learning is a growing field that has impact in many disciplines. In particular, this 
+project studies how RL can be beneficial in the robotics domain. Therefore, the main idea is to train 
+an agent to fly a drone. Specifically, the goal is to make a drone move towards a desired point in 
+space and the hover there. This has been done in the past \cite{adipandas} \cite{quadrl}, but we wanted
+to investigate the reward function and the use of different algorithms, which seems to not have been done
+thoroughly in previous work.
+
+The project was initially to use RL to automatically tune a PID controller for the drone's attitude. For 
+that, a quadcopter dynamics simulator developed by ourselves was going to act as the environment. But, 
+we had to rethought the project because our own drone simulator was too slow to make training feasible. 
+So, after doing some research a MuJoCo-based physics engine with GymAI API %cite(adipandas).
+was found. This environment gave us a baseline to train an agent fast and reliably. Not to mention the 
+possibility of render the training process.
+Our goal was now to find and implement an RL algorithm that we could use to train the drone. Since the problem
+at hand deals with continuous state and action space we did some research and found modified implementations \cite{tidyRL}
+of SAC\cite{sac} and DDPG\cite{ddpg}, and realized that SAC worked the best. However, the learning process not only took long 
+time but also, given the nature of the implementation of the RL algorithms, it was not 
+possible to save the model. In this sense, the testing process was too slow since it was needed to 
+train the agents every time. % what do you mean by "issues with explore/exploit."
+After having these issues, we switched to using OpenAI Spinning Up's \cite{spinningup} baseline implementations of VPG, DDPG, 
+PPO, TD3, and SAC to find which algorithm would work the best. SAC and TD3 both converged to find a 
+policy that was able to stabilize the drone until the arbitrary end of an episode (3000 steps), %I trained with 3000 steps as the maximum episode length
+but VPG, PPO and DDPG were not able to converge. Instead, they either leveled off or increased very gradually, achieving returns 2 or 3 orders of magnitude smaller than SAC and TD3 within similar time-frames.
+
+For hyperparameter tuning, we used the parameters that the authors specified in the paper, and we trained 
+until the average return of an episode in an epoch was around 19,000. This number is around the maximum 
+achievable return in one of our episodes.
+
+Once we had an agent capable of stabilizing and navigating the drone, we wanted to see if we could use a 
+combination of these two agents to build a local planner for drone navigation. If we keep moving our 
+target point, will the drone agent be able to follow the target point and navigate along a predefined 
+trajectory?

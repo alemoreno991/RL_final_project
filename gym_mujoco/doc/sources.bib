@@ -1,0 +1,220 @@
+
+
+@article{ppo,
+  author    = {John Schulman and
+               Filip Wolski and
+               Prafulla Dhariwal and
+               Alec Radford and
+               Oleg Klimov},
+  title     = {Proximal Policy Optimization Algorithms},
+  journal   = {CoRR},
+  volume    = {abs/1707.06347},
+  year      = {2017},
+  url       = {http://arxiv.org/abs/1707.06347},
+  eprinttype = {arXiv},
+  eprint    = {1707.06347},
+  timestamp = {Mon, 13 Aug 2018 16:47:34 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/SchulmanWDRK17.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@article{quadrl,
+	doi = {10.1109/lra.2017.2720851},
+  
+	url = {https://doi.org/10.1109%2Flra.2017.2720851},
+  
+	year = 2017,
+	month = {oct},
+  
+	publisher = {Institute of Electrical and Electronics Engineers ({IEEE})},
+  
+	volume = {2},
+  
+	number = {4},
+  
+	pages = {2096--2103},
+  
+	author = {Jemin Hwangbo and Inkyu Sa and Roland Siegwart and Marco Hutter},
+  
+	title = {Control of a Quadrotor With Reinforcement Learning},
+  
+	journal = {{IEEE} Robotics and Automation Letters}
+}
+
+@book{sutton,
+  added-at = {2019-07-13T10:11:53.000+0200},
+  author = {Sutton, Richard S. and Barto, Andrew G.},
+  biburl = {https://www.bibsonomy.org/bibtex/2f46601cf8b13d39d1378af0d79438b12/lanteunis},
+  edition = {Second},
+  interhash = {ac6b144aaec1819919a2fba9f705c852},
+  intrahash = {f46601cf8b13d39d1378af0d79438b12},
+  keywords = {},
+  publisher = {The MIT Press},
+  timestamp = {2019-07-13T10:11:53.000+0200},
+  title = {Reinforcement Learning: An Introduction},
+  url = {http://incompleteideas.net/book/the-book-2nd.html},
+  year = {2018 }
+}
+
+@inproceedings{adipandas,
+  title={Developmental reinforcement learning of control policy of a quadcopter UAV with thrust vectoring rotors},
+  author={Deshpande, Aditya M and Kumar, Rumit and Minai, Ali A and Kumar, Manish},
+  booktitle={Dynamic Systems and Control Conference},
+  volume={84287},
+  pages={V002T36A011},
+  year={2020},
+  organization={American Society of Mechanical Engineers}
+}
+
+
+@InProceedings{adversarial,
+  title = 	 {Action Robust Reinforcement Learning and Applications in Continuous Control},
+  author =       {Tessler, Chen and Efroni, Yonathan and Mannor, Shie},
+  booktitle = 	 {Proceedings of the 36th International Conference on Machine Learning},
+  pages = 	 {6215--6224},
+  year = 	 {2019},
+  editor = 	 {Chaudhuri, Kamalika and Salakhutdinov, Ruslan},
+  volume = 	 {97},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {09--15 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v97/tessler19a/tessler19a.pdf},
+  url = 	 {https://proceedings.mlr.press/v97/tessler19a.html},
+  abstract = 	 {A policy is said to be robust if it maximizes the reward while considering a bad, or even adversarial, model. In this work we formalize two new criteria of robustness to action uncertainty. Specifically, we consider two scenarios in which the agent attempts to perform an action $\action$, and (i) with probability $\alpha$, an alternative adversarial action $\bar \action$ is taken, or (ii) an adversary adds a perturbation to the selected action in the case of continuous action space. We show that our criteria are related to common forms of uncertainty in robotics domains, such as the occurrence of abrupt forces, and suggest algorithms in the tabular case. Building on the suggested algorithms, we generalize our approach to deep reinforcement learning (DRL) and provide extensive experiments in the various MuJoCo domains. Our experiments show that not only does our approach produce robust policies, but it also improves the performance in the absence of perturbations. This generalization indicates that action-robustness can be thought of as implicit regularization in RL problems.}
+}
+
+@article{RobustMath,
+	Author = {Arnab Nilim and Laurent {El Ghaoui}},
+        Journal = {Oper. Res.},
+	Number = {5},
+	Pages = {780--798},
+	Title = {Robust Control of {M}arkov Decision Processes with Uncertain Transition Matrices},
+	Volume = {53},
+	Year = {2005},
+	Month = {September-October}}
+
+@InProceedings{tamer,
+  author="W.\ Bradley Knox and Peter Stone",
+  title="Combining Manual Feedback with Subsequent {MDP} Reward Signals for Reinforcement Learning",
+  booktitle="Proc. of 9th Int. Conf. on Autonomous Agents and Multiagent Systems (AAMAS 2010)",
+  month="May",
+  year="2010",
+  abstract={As learning agents move from research labs to the real
+	world, it is increasingly important that human users, including those
+	without programming skills, be able to teach agents desired behaviors.
+	Recently, the TAMER framework was introduced for designing agents that
+	can be interactively shaped by human trainers who give only positive
+	and negative feedback signals. Past work on TAMER showed that shaping
+	can greatly reduce the sample complexity required to learn a good
+	policy, can enable lay users to teach agents the behaviors they
+	desire, and can allow agents to learn within a Markov Decision Process
+	(MDP) in the absence of a coded reward function.  However, TAMER does
+	not allow this human training to be combined with autonomous learning
+	based on such a coded reward function.  This paper leverages the fast
+	learning exhibited within the TAMER framework to hasten a
+	reinforcement learning (RL) algorithm's climb up the learning curve,
+	effectively demonstrating that human reinforcement and MDP reward can
+	be used in conjunction with one another by an autonomous agent. We
+	tested eight plausible TAMER+RL methods for combining a previously
+	learned human reinforcement function, H, with MDP reward in a
+	reinforcement learning algorithm. This paper identifies which of these
+	methods are most effective and analyzes their strengths and
+	weaknesses. Results from these TAMER+RL algorithms indicate better
+	final performance and better cumulative performance than either a
+	TAMER agent or an RL agent alone.  },
+  wwwnote={Winner of the Pragnesh Jay Modi <b>BEST STUDENT PAPER AWARD</b> (and best paper award nominee).<br>The <a href="http://www.cs.utexas.edu/~bradknox/TAMER.html">TAMER</a> project page with <a href="http://www.cs.utexas.edu/~bradknox/TAMER_in_Action.html">videos</a> of TAMER in action.<br><a href="http://www.cse.yorku.ca/AAMAS2010//">AAMAS-2010</a>},
+}
+
+@Article{replay,
+  author =       "Lin, Long-Ji",
+  title =        "Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching",
+  journal =      "Machine Learning",
+  year =         "1992",
+  volume =    "8",
+  number =    "3--4",
+  pages =     "293--321",
+  publisher = "Kluwer Academic Publishers",
+  address = "Hingham, MA, USA",
+  url = "http://www.cs.ualberta.ca/~sutton/lin-92.pdf",
+  bib2html_rescat = "Learning Methods, Comparison/Integration",
+}
+
+@article{control,
+title = {Reinforcement learning for control: Performance, stability, and deep approximators},
+journal = {Annual Reviews in Control},
+volume = {46},
+pages = {8-28},
+year = {2018},
+issn = {1367-5788},
+doi = {https://doi.org/10.1016/j.arcontrol.2018.09.005},
+url = {https://www.sciencedirect.com/science/article/pii/S1367578818301184},
+author = {Lucian Buşoniu and Tim {de Bruin} and Domagoj Tolić and Jens Kober and Ivana Palunko},
+keywords = {Reinforcement learning, Optimal control, Deep learning, Stability, Function approximation, Adaptive dynamic programming},
+abstract = {Reinforcement learning (RL) offers powerful algorithms to search for optimal controllers of systems with nonlinear, possibly stochastic dynamics that are unknown or highly uncertain. This review mainly covers artificial-intelligence approaches to RL, from the viewpoint of the control engineer. We explain how approximate representations of the solution make RL feasible for problems with continuous states and control actions. Stability is a central concern in control, and we argue that while the control-theoretic RL subfield called adaptive dynamic programming is dedicated to it, stability of RL largely remains an open question. We also cover in detail the case where deep neural networks are used for approximation, leading to the field of deep RL, which has shown great success in recent years. With the control practitioner in mind, we outline opportunities and pitfalls of deep RL; and we close the survey with an outlook that – among other things – points out some avenues for bridging the gap between control and artificial-intelligence RL techniques.}
+}
+
+@article{abbeel,
+  author    = {Tianhao Zhang and
+               Gregory Kahn and
+               Sergey Levine and
+               Pieter Abbeel},
+  title     = {Learning Deep Control Policies for Autonomous Aerial Vehicles with
+               MPC-Guided Policy Search},
+  journal   = {CoRR},
+  volume    = {abs/1509.06791},
+  year      = {2015},
+  url       = {http://arxiv.org/abs/1509.06791},
+  eprinttype = {arXiv},
+  eprint    = {1509.06791},
+  timestamp = {Mon, 13 Aug 2018 16:48:24 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/ZhangKLA15.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@misc{ddpg,
+  doi = {10.48550/ARXIV.1509.02971},
+  
+  url = {https://arxiv.org/abs/1509.02971},
+  
+  author = {Lillicrap, Timothy P. and Hunt, Jonathan J. and Pritzel, Alexander and Heess, Nicolas and Erez, Tom and Tassa, Yuval and Silver, David and Wierstra, Daan},
+  
+  keywords = {Machine Learning (cs.LG), Machine Learning (stat.ML), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  
+  title = {Continuous control with deep reinforcement learning},
+  
+  publisher = {arXiv},
+  
+  year = {2015},
+  
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@misc{sac,
+  doi = {10.48550/ARXIV.1801.01290},
+  
+  url = {https://arxiv.org/abs/1801.01290},
+  
+  author = {Haarnoja, Tuomas and Zhou, Aurick and Abbeel, Pieter and Levine, Sergey},
+  
+  keywords = {Machine Learning (cs.LG), Artificial Intelligence (cs.AI), Machine Learning (stat.ML), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  
+  title = {Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor},
+  
+  publisher = {arXiv},
+  
+  year = {2018},
+  
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@misc{tidyRL,
+ url = {https://github.com/babyapple/tidy-rl}
+}
+
+@article{spinningup,
+    author = {Achiam, Joshua},
+    title = {{Spinning Up in Deep Reinforcement Learning}},
+    year = {2018}
+}

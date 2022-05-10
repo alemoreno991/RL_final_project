@@ -1,0 +1,16 @@
+\section{Discussion}
+
+First of all, it is worth mentioning that the project was very time consuming due to the various 
+complications that arose and the training times required. Nevertheless, it was possible to solve
+all the issues and verify that it is indeed possible to train an agent to stabilize a drone 
+even from extreme initial conditions. 
+
+Something worth mentioning is that the steady state (hover) achieved is not quite perfect. It is possible to 
+observe a vibration-like behavior (high frequency oscillation of $\omega$ and the corresponding euler angles) when the drone is hovering.
+Hence, a possibility would be to modify the reward function to avoid or attenuate it. Currently, we tried simply
+penalizing the magnitude of our velocities, angular and linear, but this didn't have an effect on the oscillations. 
+Were we using a PID controller, the Integral term would be able to smooth out the control signal over time, but because of the 
+Markovian nature of RL, we were wary of trying to make our penalties functions of many previous states.
+
+With regards to the algorithm results, we believe that TD3 was able to converge faster than SAC because TD3 doesn't make use of entropy regularization. 
+To control a drone (either to hover or to navigate to a point), there is usually one optimal control signal, and after learning for a while, exploration can be curtailed. Because SAC was trying to learn a stochastic policy, it takes more time to converge to an optimal solution. TD3, on the other hand, quickly finds and exploits good policies.
