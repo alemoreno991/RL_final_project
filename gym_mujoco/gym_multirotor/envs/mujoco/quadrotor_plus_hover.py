@@ -176,7 +176,7 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
 
             dist_from_line = self.norm(np.cross((x0 - x1),(x0 - x2))) / self.norm(x2 - x1)
 
-        line_penalty = -10.0 * dist_from_line
+        line_penalty = -5.0 * dist_from_line
 
         alive_bonus = self.reward_for_staying_alive
 

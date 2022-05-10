@@ -29,10 +29,18 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=4000):
         a += noise_scale * np.random.randn(act_dim)
         return np.clip(a, -act_limit, act_limit)
 
-    testflag = False
+    testflag = False 
 
-    traj = [[0, 0], []]
-    traj = [[0, 0], [-1, 0], [0, -1], [1, 0], [0, 1]]
+    # traj = [[0,0],[1, 0], [1, 1], [0,0]]
+    # traj = [[0, 0], [-2, 0], [1, -1], [1, 1]]
+
+    # traj = [[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]
+    # traj = [[0, 0], [-2, 0], [0, -2], [2, 0], [0, 2]]
+
+    # traj = [[0, 0],[1, 0], [2, 0],[2, 1], [2, 2],[1, 2] [0, 2], [0, 1], [0, 0]]
+    traj = [[0, 0], [-1, 0],[-1, 0], [0, -1],[0, -1], [1, 0],[1, 0], [0, 1],[0, 1]]
+
+
     offset_x = 0
     offset_y = 0
 
@@ -53,7 +61,7 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=4000):
     wait = 0
 
     while not(d or (ep_len == max_ep_len)):
-        test_env.render()
+        # test_env.render()
         action = get_action(o, 0)
         o, _, d, _ = test_env.step(action)
 
@@ -62,12 +70,12 @@ def test_td3(env_fn, ac, seed=0, max_ep_len=4000):
 
         states.append(test_env.get_state())
 
-        if wait < 50 and (abs(o[0]) < 0.02 and abs(o[1]) < 0.02 and abs(o[2]) < 0.02):
+        if wait < 0 and (abs(o[0]) < 0.02 and abs(o[1]) < 0.02 and abs(o[2]) < 0.02):
             wait += 1
         elif (abs(o[0]) < 0.02 and abs(o[1]) < 0.02 and abs(o[2]) < 0.02):
             wait = 0
             ct += 1
-            if (ct > 4):
+            if (ct > 8):
                 continue
             offset_x += traj[ct][0]
             offset_y += traj[ct][1]
