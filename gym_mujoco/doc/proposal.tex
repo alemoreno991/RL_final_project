@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sources.bib} %Import the bibliography file
+
+\title{CS394R Project Proposal & Literature Review}
+\author{Alejandro Moreno, Arnav  Iyer}
+\date{April 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+% # The idea & why is it relevant
+
+Drones are increasingly relevant in the defense and delivery spaces, so we thought it would be interesting to apply RL to this space. In particular, tuning PID controllers to balance attitude (pitch, roll, and yaw) is one area which is conducive to RL. Even though there are existing methods that accomplish the same goal, many of them approximate the non-linearity of the drone's actuators as linear systems with some error, and use multiple PID controllers for different drone speeds to cope with this. Using RL could allow for online PID adjustment for different conditions.
+
+\section{Methodology}
+
+% # Plan (1stage, 2stage, 3stage, 4stage)
+
+To accomplish some of our larger goals, we have broken down our process into a series of steps that increase in scope. Each step has a brief outline of the states, actions, and rewards we plan to use. $\theta$, $\phi$, and $\psi$ represent the attitude of the drone, and their dotted counter parts represent their rate of change. $v_x$,$v_y$, and $v_z$ represent the velocities of the drone.
+
+ \begin{description}
+    \item[First step:] auto-tune an attitude controller (PID or LQR) using a simplified model of the drone dynamics. We propose to use just one just one axis (e.g. roll) and make sure that the controller stabilizes it. This is much simpler because there are no coupled dynamics between different axis.
+    \begin{itemize}
+        \item states($\phi$,$\dot{\phi}$)
+        \item actions($k_p$,$k_i$,$k_p$)
+        \item reward $J = x^TSx + \int_{t_0}^{t_f} [x^TQx + u^TRu] dt$
+    \end{itemize}
+    \item[Second step:] We can auto-tune multiple PIDs for each axis of the drone (e.g. pitch, yaw and roll). This is more challenging because of coupled dynamics; changes in one of pitch, yaw, roll will affect others. 
+    \begin{itemize}
+        \item states($\theta$,$\phi$,$\psi$,$\dot{\theta}$,$\dot{\phi}$,$\dot{\psi}$)
+        \item actions($k_p$,$k_i$,$k_p$) for each axis
+        \item reward $J = x^TSx + \int_{t_0}^{t_f} [x^TQx + u^TRu] dt$
+    \end{itemize}
+    \item[Third step:] We can also explore different velocity regimes which most certainly will change the dynamics of the drone. This could lead to an online PID tuning for a moving drone.
+    \begin{itemize}
+        \item states($v_x$,$v_y$,$v_z$,
+                    $\theta$,$\phi$,$\psi$,
+                    $\dot{theta}$,$\dot{\phi}$,$\dot{\psi}$)
+        \item actions($k_p$,$k_i$,$k_p$) for each axis
+        \item reward $J = x^TSx + \int_{t_0}^{t_f} [x^TQx + u^TRu] dt$
+    \end{itemize}
+    \item[Fourth step:] We can move to a more detailed physics simulator like Unity to create nice visualizations and enable further development.
+ \end{description}
+
+The reward function we want to use is based on the cost functional that is 
+used in optimal control theory. It takes into account steady-state errors,
+errors in the state while evolving to a reference input and the magnitude of 
+the action are also penalized (so that you don't overwhelm the actuators). In 
+this sense, it seems to be a good reward function for our problem.
+
+% It is worth mentioning that not all stages need to be addressed. Just with 
+% the first one we would have a complete project that uses RL to control a simplified 
+% version of a drone. However, in case we make progress quickly we can get our hands 
+% into more realistic scenarios.
+
+\subsection{Related Works}
+
+To implement the drone controller, the first approach we will implement will be REINFORCE with baseline or true online TD($\lambda$) as described in Sutton \cite{sutton} chapter 12 and 13. This will simply be to make sure that our dynamics model can be used to learn to control the drone, since we just have to modify our code from the previous assignment by adding support for continuous action spaces. We will use tile-coding to accomplish this since voltages sent to drone rotors that are similar will cause similar effects.
+
+After doing some research into previous work done to train drones with RL, we came across a few papers. The first one, \cite{quadrl}, describes an RL technique to train a drone to move around given a plan, and also stabilize itself. They also use policy-gradient methods, but the state vector they input into their networks seemed unwieldy, because they used a rotation matrix (9 parameters) as well as position, angular velocity, and linear velocity (9 more parameters) as their state vector. We plan on only using 12 parameters, representing the state with euler angles instead of a rotation matrix. We plan to deal with gimbal lock by resetting the episode if our drone's pitch or roll go past a certain angle (maybe 45-50 degrees). This paper also used an MPC-based approach to generate possible trajectories to navigate towards the goal as described in \cite{abbeel}. We thought this was very interesting, because using MPC or RL independently to solve this problem would be too computationally expensive, but integrating the two achieved a balance. While it is out of the scope of our project, this approach could be considered for future extensions.
+
+Another paper that we looked at which used RL to control a quadrotor drone was \cite{robust}. In this paper, they used Robust Markov Decision Processes to train the drone to be robust to changing environmental conditions. Mathematically, this is described in \cite{RobustMath} by introducing a bounded uncertainty to the transition probabilities $p(s^\prime, r | s, a)$. This is implemented like \cite{adversarial} by training one policy to choose actions to maximize reward, and another policy that chooses uncertainty that minimizes reward. This way, a robust policy will be learned. While we are currently only training the drone in simulation in ideal conditions, if we were to extend this project this technique could be considered to account for bad environmental conditions. We also thought this resembled the approach from the paper about the adversarial RL agents we read about in class, where two agents were trained to beat each other in \cite{markovgames}. It seems that if we were to train two policy networks in this adversarial way, we should consider the minimax-Q algorithms because learning probabilistic policies would better converge.
+
+If we were to learn PID parameter values for a given controller and dynamics drone simulator, then we may want to consider using TAMER or another framework for human-in-the-loop learning to speed up parameter learning or fine-tune human-input PID values as described in \cite{tamer}. We may also want to implement experience replay for faster training as described in \cite{replay}. This would involve using an off-policy learning technique, so we would adapt our implementation accordingly.
+
+We also investigated any previous work in control that utilized reinforcement learning, and we came across \cite{control}. This paper talks about the RL techniques, mostly all discussed in \cite{sutton}, from a control point of view. It gave an insight into what algorithms worked for control problems of different natures and certain pitfalls in using deep RL methods for control problems.
+
+
+
+\printbibliography
+
+% \subsection{Environment}
+
+% Our main source of data will be a drone dynamics simulator that Alejandro is developing for another class. We can use as an environment for training. If we get to the later stages of the project, we will consider using Unity to simulate a drone.
+
+% \subsection{RL Techniques}
+
+% Regarding RL techniques that we are thinking about using, Actor-Critic methods or QTopt may work for our purposes because we have continuous state spaces (angle of pitch, roll, yaw) as well as continuous action spaces (PID gains).
+
+% \section{Open Questions}
+
+% There are still a few things we need to think about regarding the project, we may want to explore different reward functions. We think that the best contender is to use ideas from control theory and penalizing a sum of the squared error of the PID controller, since this is what we want to minimize. However, we may want to see if other reward signals, like having a constant negative reward when the drone loses balance and zero otherwise.
+
+\end{document}

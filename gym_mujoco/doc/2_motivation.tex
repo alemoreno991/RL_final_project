@@ -1,0 +1,37 @@
+\section{Motivation}
+
+Control theory is a well known and studied field of engineering. The methods and 
+strategies developed during the last century came a long way to become what we 
+know today as Classical, Modern, Robust, Optimal, Adaptive, etc. All of this methods 
+are based on the assumption that a model of the plant is available to the designer.
+Moreover, this methods are based on linear systems, hence, are not able to handle 
+non-linearities very well. This fact is what motivates this work because a drone 
+is a highly non-linear system when one wants to operate it in its whole flight 
+envelope.
+
+The linear control systems enumerated before are very good options when one wants to 
+operate close to a working point. In our case, they would do very well if properly 
+tuned to keep the drone in quasi-static condition (hover-like). Nevertheless, they 
+would perform poorly if that same controller were to be used to design an acrobatic 
+or a racing drone. 
+
+As explained in \cite{control} and \cite{adversarial}, two papers that talk about reinforcement learning being used to solve classical control problems, there are three reasons behind using RL in control settings:
+
+\begin{itemize}
+    \item No model needed.
+    \item No expert knowledge needed.
+    \item Naturally handles non-linearities.
+\end{itemize}
+
+The list presented above is a major improvement our project could achieve over 
+the control methods previously mentioned. The model unknowns are more often than 
+not very hard to figure out, both economically and time-wise. Even if the model 
+is perfectely known, the synthesis of the controller could in some cases like PID
+be very time consuming to fine tune. Nevertheless, in case one had a good model of 
+the plant classical control theory most likely result in a very appealing option, 
+it wouldn't account for changes in the operating point. Let's say the drone is 
+at rest (hovering) and it suddenly wants to race to a goal. The aerodynamic 
+effects and the non-linearities of the kinematics would then kick in and the plant's 
+model would differ very much from the one used to tune the controller in a classical 
+sense. Here is were RL could potentially achieve better performance by being able 
+to handle the full flight envelop and maintain stability and performance throughout.

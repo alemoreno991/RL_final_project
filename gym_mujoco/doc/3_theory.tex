@@ -1,0 +1,162 @@
+\section{Theory}
+A quadcopter is potentially a very challenging system to control if one would 
+like to operate it in different environments. For example, the wind or the drag
+force the vehicle is going to undergo could play a major role when designing a 
+traditional control strategy. In this project a model-free reinforcement learning 
+algorithm is used. However, it is interesting to show some of the dynamics that 
+one would have to consider if a different approach was used.
+
+%%**********************************************************************************
+\subsection{Kinematic model}
+%%**********************************************************************************
+
+A kinematic model allows one to know the position, velocity and attitude of a body 
+with respect to their temporal dependence to acceleration and angular acceleration. 
+
+\begin{itemize}
+    \item Define a frame of reference
+    \item Choose a parametrization for the angular representation
+\end{itemize}
+
+The state vector is defined as the 18 element vector described in Table~\ref{tab:referencias}.
+
+\vspace{1cm}
+\begin{table}[H]
+\centering
+\caption{State vector.}
+\label{tab:referencias}
+\begin{tabular}{|| c | p{7.5cm}||}
+\hline
+\hline
+\myalign{||p{2.5cm}|}{State variable} & \myalign{c||}{Description} \\
+\hline
+\hline
+$r_x^\boldsymbol{I}$ & Position - X in inertial frame\\
+$r_y^\boldsymbol{I}$ & Position - Y in inertial frame\\
+$r_z^\boldsymbol{I}$ & Position - Z in inertial frame\\
+\hline
+\hline
+$v_x^\boldsymbol{I}$ & Velocity - X in inertial frame\\
+$v_y^\boldsymbol{I}$ & Velocity - X in inertial frame\\
+$v_z^\boldsymbol{I}$ & Velocity - X in inertial frame\\
+\hline
+\hline
+$R_{BI}$      & Direction-cosine matrix that rotates from inertial to body frame \\
+\hline
+\hline
+$\omega_x^B$  & \textit{roll} angular rate, expressed with respect to $B$.\\
+$\omega_y^B$  & \textit{pitch} angular rate, expressed with respect to $B$.\\
+$\omega_z^B$  & \textit{yaw} angular rate, expressed with respect to $B$.\\
+\hline
+\hline
+\end{tabular}
+\end{table}
+
+The input vector is defined as the 6 element vector described in Table~\ref{tab:referencias_input}.
+
+\begin{table}[H]
+\centering
+\caption{Kinematic inputs.}
+\label{tab:referencias_input}
+\begin{tabular}{|| c | p{6.5cm}||}
+\hline
+\hline
+\myalign{||p{1.5cm}|}{Input} & \myalign{c||}{Description} \\
+\hline
+\hline
+$F_x$       & Force - X expressed in body frame \\
+$F_y$       & Force - Y expressed in body frame \\
+$F_z$       & Force - Z expressed in body frame \\
+\hline
+\hline
+$N_x^B$     & Torque - X expressed in body frame \\
+$N_y^B$     & Torque - Y expressed in body frame \\
+$N_z^B$     & Torque - Z expressed in body frame \\
+\hline
+\hline
+\end{tabular}
+\end{table}
+
+The kinematic model can be represented as Equation~\ref{eq:EspacioEstados_desagregado}.
+
+\vspace{0.5cm}
+\begin{equation}
+    \left\{\begin{array}{l}
+        m\vbd{a}_{\rm I} = m \vb{v}_{\rm I} \\
+        \vbd{v}_{\rm I} = -\vb{g} + R^T_{\rm BI} \sum_{i=1}^4 \vb{a}^{\rm B}_i\\
+        \dot{R}_{\rm BI}=-[\vb{\omega}_{\rm B} \times]R_{\rm BI} \\
+        \vbd{\omega}_{\rm B} = J^{-1} \left(\vb{N}_{\rm B} -[\vb{\omega}_{\rm B} \times] J \vb{\omega}_{\rm B}\right) \quad \mbox{where} \quad \vb{N}_{\rm B}= \sum^4_{i=1} \vb{N}_i + \vb{r}_i \times \vb{F}_i
+    \end{array}\right.
+    \label{eq:EspacioEstados_desagregado}
+\end{equation}
+
+One should be aware that this is just a model and the real system could be much more complicated.
+For instance, the mass and inertia matrix of the drone could change over time. In addition, the 
+structure could be flexible to a certain degree.
+
+%%**********************************************************************************
+\subsection{Dynamic model}
+%%**********************************************************************************
+
+A dynamic model establishes how the forces and moments impact the system.  
+
+
+\begin{itemize}
+    \centering 
+    \item \textbf{Gravity:} it is not constant and modelling it accurately is not at all trivial.
+    \item \textbf{Aerodynamics:} drag and lift forces are complex (to say the least) to accurately represent. In addition, wind can radically change the impact of these forces and torques. 
+    Furthermore, any asymmetry in the structure will also generate torques which makes 
+    the model even more difficult to get.
+    \item \textbf{Propulsion:} the motors have their own dynamic which one would need to consider
+    \item \textbf{Other effects:} interaction between the magnetic field of the motor and metallic 
+    pieces with the earth's magnetic field (or industrial electric fields).  
+\end{itemize}    
+
+As one can guess at this point, representing the real forces and moments is unfeasible. Even 
+the best models will contain errors and mismatches. However, one could think that, even though 
+it is hard to an accurate representation of reality, it is still possible (this is what aeronautical
+engineers did and still do).
+
+%%**********************************************************************************
+\subsection{Reinforcement learning}
+%%**********************************************************************************
+
+In this project, the idea is to use a model-free approach that allows the designer 
+to become independent of the complexities and issues related to modelling the dynamics 
+and kinematics of a drone.
+
+\begin{description}
+    \item [State:] is the one described in the kinematic section. Note that there is 
+    no need to identify the time dependency before hand. Only observation of this 
+    continuous state vector is needed.
+    \item [Actions:] the input to each of the 4 motors is going to be considered, where 
+    the propellers are allowed to spin in both directions (generating positive and negative
+    thrust). The action space is, therefore, continuous and bounded.
+    \item [Reward:] a quadratic combination of weighted error between the current state and 
+    the desired state ($-x_e^T Q x_e$), and a quadratic combination of weighted input effort ($-u^T R u$) is considered. 
+    In addition, we add a reward for each time step the agent stays alive, penalties and bonuses for ending the episode and achieving a certain goal, and a penalty for straying too far from the straight line between the start and the goal.
+    
+\subsubsection{Our Reward Function}
+
+Our reward function is adapted from \cite{adipandas} Quadrotor environment. However, we added a few more terms and tuned the values of their constants. Here is a detailed summary into what exactly is penalized and rewarded in our reward function. Bolded additions are novel to our method, and scale factors used are in parentheses.
+
+\noindent Penalties:
+\begin{itemize}
+    \item Distance to Goal (-5).
+    \item Orientation Error (Norm of euler angles) (-0.02).
+    \item Magnitude of linear and angular velocities (-0.01, -0,001).
+    \item Magnitude of taken action (-0.0025).
+    \item Flat penalty for leaving environment bounds (-15).
+    \item Distance from line between start and goal (-5).
+    \item Change in action from previously taken action (-3).
+\end{itemize}
+
+\noindent Bonuses:
+\begin{itemize}
+    \item Flat Reward for staying alive (5)
+    \item Flat bonus to reach the goal (15).
+    \item Velocity towards goal (0.1).
+\end{itemize}
+
+\end{description}
+ 
