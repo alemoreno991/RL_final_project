@@ -1,5 +1,16 @@
 # Reinforcement Learning - Final Project
 
+<center>
+    <iframe 
+        width="500" 
+        height="300" 
+        src="https://www.youtube.com/embed/81Ts0d0QkdI" 
+        frameborder="0" 
+        allowfullscreen
+    >
+    </iframe>
+</center>
+
 Take a look at the different training stages of the agent
 
 baby | teenager | adult
